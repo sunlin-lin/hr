@@ -1,7 +1,7 @@
 # 人事作業／員工清單 UI 定案
 
 > 狀態：本輪已確認  
-> 對應 Schema：[員工清單 Schema 對應與調整](../schema/20-employee-list-schema.md)
+> 對應 Schema：主要回寫於 [公司、角色權限與組織](../schema/01-company-access-organization.md)、[組織人事、薪資與人事成本](../schema/02-employee-payroll-cost.md)及[系統稽核](../schema/05-regulatory-system.md)。
 
 ## 1. 選單與列表
 
