@@ -223,6 +223,21 @@
 | `requested_clocked_at` | `datetime` | 必填 | 申請補登的實際打卡時間；較晚版本曾寫作 `requested_at`，語意以此欄為準 |
 | `reason` | `型態待恢復` | 待核對 | 原因 |
 | `status_code` | `型態待恢復` | 待核對 | 流程或資料狀態代碼 |
+| `reviewed_by` | `uuid` | 選填 | 審核者；待審核及已撤回時為 NULL |
+| `reviewed_at` | `datetime` | 選填 | 完成審核時間 |
+| `review_comment` | `text` | 條件必填 | 審核意見；未核准時必填 |
+
+**已確認流程與約束：**
+
+- 上班與下班分開申請；同一工作日、同一類型不得同時存在多筆待審核申請。
+- 已有有效打卡的類型不得重複申請；不可申請未來日期。
+- 已結算月份不得提出申請；存在待審核申請時應阻止月份結算。
+- 待審核申請可由員工撤回；撤回保留紀錄且不得再審核。
+- 未核准申請不提供複製後重新送出；未核准時 `review_comment` 必填。
+- 核准後才建立正式 `attendance_records`，來源為人工補登，且不建立 GPS。
+- 核准後重新計算 `attendance_results`。
+- 撤回欄位名稱與型態尚待確認。
+- 詳細規劃見 [13-ui-attendance-correction.md](13-ui-attendance-correction.md)。
 
 ### `attendance_settings`
 
