@@ -244,7 +244,17 @@
 
 | 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
 |---|---|---|---|
-| — | — | — | 原對話已確認此資料表／資料責任，但此輪未能可靠恢復逐欄最終版本；不自行猜欄位。 |
+| `id` | `uuid` | 必填 | PK，計薪期間 ID |
+| `company_id` | `uuid` | 必填 | FK → `companies.id` |
+| `period_code` | `string` | 必填 | 計薪期間代碼，例如 `202608` |
+| `start_date` | `date` | 必填 | 計薪開始日期 |
+| `end_date` | `date` | 必填 | 計薪結束日期 |
+| `pay_date` | `date` | 必填 | 預定發薪日期 |
+| `status_code` | `integer` | 必填 | 計薪期間狀態；後期定案採 code，不採早期 `status string` |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 修改時間 |
+
+**關聯與約束：** `company_id → companies.id`；同一公司 `period_code` 不得重複；`start_date ≤ end_date`。`payroll_settings` 是週期規則，本表是實際生成的計薪期間。
 ### `payrolls`
 
 **註釋：** 員工某計薪期薪資單／結算主檔；保存應發、扣款、實發與鎖定狀態。
@@ -254,7 +264,21 @@
 
 | 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
 |---|---|---|---|
-| — | — | — | 原對話已確認此資料表／資料責任，但此輪未能可靠恢復逐欄最終版本；不自行猜欄位。 |
+| `id` | `uuid` | 必填 | PK，薪資單 ID |
+| `payroll_period_id` | `uuid` | 必填 | FK → `payroll_periods.id` |
+| `employee_id` | `uuid` | 必填 | FK → `employees.id` |
+| `employment_id` | `uuid` | 必填 | FK → `employee_employments.id` |
+| `gross_amount` | `decimal` | 必填 | 應發總額 |
+| `deduction_amount` | `decimal` | 必填 | 扣款總額 |
+| `net_amount` | `decimal` | 必填 | 實發金額 |
+| `status_code` | `integer` | 必填 | 薪資單生命週期狀態 |
+| `approved_by` | `uuid` | 選填 | 核准人員 ID |
+| `approved_at` | `datetime` | 選填 | 核准時間 |
+| `paid_at` | `datetime` | 選填 | 實際發薪時間 |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 修改時間 |
+
+**關聯與約束：** 原則上 `UNIQUE(payroll_period_id, employee_id)`；同一薪資單的 `employment_id` 必須屬於該員工。核准、發薪、結算後不得因調薪或法規更新重算覆蓋；錯誤於後續期間補發／扣回。
 ### `payroll_details`
 
 **註釋：** 當期實際薪資明細，可來自長期設定、系統計算、臨時新增或人工調整。
@@ -279,12 +303,41 @@
 
 | 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
 |---|---|---|---|
-| — | — | — | 原對話已確認此資料表／資料責任，但此輪未能可靠恢復逐欄最終版本；不自行猜欄位。 |
+| `id` | `uuid` | 必填 | PK，銀行帳戶 ID |
+| `employee_id` | `uuid` | 必填 | FK → `employees.id` |
+| `bank_code` | `string` | 必填 | 銀行代碼 |
+| `branch_code` | `string` | 必填 | 分行代碼 |
+| `account_number_encrypted` | `varbinary` | 必填 | 銀行帳號加密值 |
+| `account_number_hash` | `varbinary` | 必填 | 銀行帳號查詢 Hash |
+| `account_name_encrypted` | `varbinary` | 必填 | 戶名加密值 |
+| `is_primary` | `boolean` | 必填 | 是否主要發薪帳戶 |
+| `status_code` | `integer` | 必填 | 帳戶狀態；後期定案採 code |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 修改時間 |
+| `deleted_at` | `datetime` | 選填 | Soft Delete 時間 |
+
+**關聯與約束：** `employee_id → employees.id`；同一員工可有多個帳戶，但同時間只能有一個主要帳戶。帳號不得明文保存。
 ### `payroll_payments`
 
 **註釋：** 實際薪資發放方式、時間、金額與結果。
 
 **設計理由：** 付款紀錄與薪資單分離，因一張薪資單的計算完成與實際付款是不同事件，也可能有重送、失敗或分次付款紀錄。
+
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `uuid` | 必填 | PK，發薪紀錄 ID |
+| `payroll_id` | `uuid` | 必填 | FK → `payrolls.id` |
+| `payment_method_code` | `integer` | 必填 | 1 銀行轉帳、2 現金、3 支票 |
+| `bank_account_id` | `uuid` | 選填 | FK → `employee_salary_bank_accounts.id`；非轉帳可為 NULL |
+| `amount` | `decimal` | 必填 | 實際發放金額 |
+| `payment_status_code` | `integer` | 必填 | 發放狀態代碼 |
+| `paid_at` | `datetime` | 必填性依狀態 | 實際發放時間；未發放時可為 NULL |
+| `reference_number` | `string` | 選填 | 銀行交易或公司內部交易編號 |
+| `description` | `string` | 選填 | 發放說明 |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 修改時間 |
+
+**關聯與約束：** 銀行轉帳時 `bank_account_id` 條件必填，且帳戶必須屬於該薪資單員工；付款紀錄不得取代或修改薪資計算結果。
 
 ## 人事成本
 
