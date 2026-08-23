@@ -46,6 +46,7 @@
 - [09-ui-all-attendance.md](09-ui-all-attendance.md) — 人事作業／全體出勤按月查詢與位置顯示
 - [10-ui-dashboard-attendance.md](10-ui-dashboard-attendance.md) — 預設總覽、上下班打卡與撤銷規則
 - [11-ui-my-profile.md](11-ui-my-profile.md) — 我的資料／唯讀個資與變更密碼
+- [12-ui-my-attendance.md](12-ui-my-attendance.md) — 我的資料／本人按月出勤統計與列表
 
 ## 全域規則
 
