@@ -13,8 +13,8 @@
 
 **資料表註釋：** SaaS Tenant／公司或個人雇主主檔，保存法定識別、三組地址及系統狀態。
 
-| 欄位 | 型態 | 必填 | 註釋 |
-|---|---|---:|---|
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
 | `id` | `uuid` | 是 | PK，系統內部 Tenant ID |
 | `company_code` | `string` | 是 | 全域唯一業務編號 |
 | `company_type` | `string` | 是 | 公司／個人；不用 ENUM |
@@ -22,9 +22,18 @@
 | `tax_id` | `string` | 條件 | 統編；公司型主體使用 |
 | `name` | `string` | 是 | 正式名稱／個人姓名 |
 | `short_name` | `string` | 否 | 簡稱 |
-| `registered_postal_code/city/district/address` | `string` | 否 | 登記地址四欄 |
-| `actual_postal_code/city/district/address` | `string` | 否 | 實際地址四欄 |
-| `invoice_postal_code/city/district/address` | `string` | 否 | 發票地址四欄 |
+| `registered_postal_code` | `string` | 選填 | 登記地址郵遞區號 |
+| `registered_city` | `string` | 選填 | 登記地址縣市 |
+| `registered_district` | `string` | 選填 | 登記地址行政區 |
+| `registered_address` | `string` | 選填 | 登記地址詳細內容 |
+| `actual_postal_code` | `string` | 選填 | 實際地址郵遞區號 |
+| `actual_city` | `string` | 選填 | 實際地址縣市 |
+| `actual_district` | `string` | 選填 | 實際地址行政區 |
+| `actual_address` | `string` | 選填 | 實際地址詳細內容 |
+| `invoice_postal_code` | `string` | 選填 | 發票地址郵遞區號 |
+| `invoice_city` | `string` | 選填 | 發票地址縣市 |
+| `invoice_district` | `string` | 選填 | 發票地址行政區 |
+| `invoice_address` | `string` | 選填 | 發票地址詳細內容 |
 | `status` | `string` | 是 | 公司資料狀態 |
 | `created_at` | `datetime` | 是 | 建立時間 |
 | `updated_at` | `datetime` | 是 | 修改時間 |
@@ -36,8 +45,8 @@
 
 **資料表註釋：** 公司負責人、業務與會計聯絡窗口；Company 1:N Contacts。
 
-| 欄位 | 型態 | 必填 | 註釋 |
-|---|---|---:|---|
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
 | `id` | `uuid` | 是 | PK |
 | `company_id` | `uuid` | 是 | FK → `companies.id` |
 | `contact_type` | `string` | 是 | `OWNER`／`SALES`／`ACCOUNTING` |
@@ -47,36 +56,74 @@
 | `birthday_encrypted` | `binary` | 否 | 生日加密值 |
 | `phone_encrypted` | `binary` | 否 | 電話加密值 |
 | `email_encrypted` | `binary` | 否 | Email 加密值 |
-| `created_at/updated_at` | `datetime` | 是 | 建立／修改時間 |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 修改時間 |
 
 ## 角色／權限
 
 ### `roles`
 
-**註釋：** 公司角色主檔；不預先寫死 HR、主管等角色。
+**資料表註釋：** 公司角色主檔；不預先寫死 HR、主管等角色。
 
-`id uuid PK`、`company_id uuid FK`、`code string`、`name string`、`description string`、`is_system boolean`、`status string`、`created_at datetime`、`updated_at datetime`、`deleted_at datetime nullable`。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `uuid` | 必填 | PK，角色唯一識別碼 |
+| `company_id` | `uuid` | 必填 | FK → `companies.id` |
+| `code` | `string` | 必填 | 公司內角色代碼 |
+| `name` | `string` | 必填 | 角色名稱 |
+| `description` | `string` | 選填 | 角色用途說明 |
+| `is_system` | `boolean` | 必填 | 是否系統預設角色 |
+| `status` | `string` | 必填 | 角色狀態，不用 ENUM |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 修改時間 |
+| `deleted_at` | `datetime` | 選填 | Soft Delete 時間 |
 
 ### `permissions`
 
-**註釋：** 系統權限主檔，以自關聯建立任意層級的大權限／次權限。
+**資料表註釋：** 系統權限主檔，以自關聯建立任意層級的大權限／次權限。
 
-`id uuid PK`、`parent_id uuid nullable FK→permissions.id`、`code string`、`name string`、`description string`、`status string`、`created_at datetime`、`updated_at datetime`、`deleted_at datetime nullable`。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `uuid` | 必填 | PK，權限唯一識別碼 |
+| `parent_id` | `uuid` | 選填 | FK → `permissions.id`；根權限為 NULL |
+| `code` | `string` | 必填 | 權限唯一代碼 |
+| `name` | `string` | 必填 | 權限名稱 |
+| `description` | `string` | 選填 | 權限用途說明 |
+| `status` | `string` | 必填 | 權限狀態，不用 ENUM |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 修改時間 |
+| `deleted_at` | `datetime` | 選填 | Soft Delete 時間 |
 
 `permission_type` 最終不採用；層級只由 `parent_id` 表示。
 
 ### `role_permissions`
 
-**註釋：** 角色與權限多對多關聯。
+**資料表註釋：** 角色與權限多對多關聯。
 
-`role_id uuid FK`、`permission_id uuid FK`、`created_at datetime`；複合唯一 `UNIQUE(role_id, permission_id)`，不需要獨立 `id`。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `role_id` | `uuid` | 必填 | FK → `roles.id` |
+| `permission_id` | `uuid` | 必填 | FK → `permissions.id` |
+| `created_at` | `datetime` | 必填 | 綁定建立時間 |
+
+約束：`UNIQUE(role_id, permission_id)`；不建立獨立 `id`。
 
 ## `departments`
 
 **資料表註釋：** 公司部門樹；以 `parent_id` 支援無限層級。
 
-`id uuid PK`、`company_id uuid FK`、`parent_id uuid nullable FK→departments.id`、`code string`、`name string`、`description string`、`status string`、`created_at datetime`、`updated_at datetime`、`deleted_at datetime nullable`。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `uuid` | 必填 | PK，部門唯一識別碼 |
+| `company_id` | `uuid` | 必填 | FK → `companies.id` |
+| `parent_id` | `uuid` | 選填 | FK → `departments.id`；根部門為 NULL |
+| `code` | `string` | 必填 | 公司內部門代碼 |
+| `name` | `string` | 必填 | 部門名稱 |
+| `description` | `string` | 選填 | 部門說明 |
+| `status` | `string` | 必填 | 部門狀態，不用 ENUM |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 修改時間 |
+| `deleted_at` | `datetime` | 選填 | Soft Delete 時間 |
 
 約束：父子部門必須屬於同一 `company_id`；不得跨 Tenant 建樹。
-
 
