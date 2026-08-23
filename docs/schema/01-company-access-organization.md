@@ -73,7 +73,7 @@
 - 已被公司成員使用的角色必須先移轉才能刪除；公司最後一個管理角色不得刪除。
 - `permissions` 後續建議補 `is_assignable` 與 `sort_order`。
 - 帳號／公司成員與角色的關聯尚未定案；待帳號模型確認後再正式命名與定義，不直接補猜 Schema。
-- 詳細流程見 [07-ui-role-permission.md](07-ui-role-permission.md)。
+- 詳細流程見 [07-ui-role-permission.md](../ui/07-ui-role-permission.md)。
 
 ### `roles`
 
@@ -197,7 +197,7 @@
 - 本人關係由目前登入帳號、目前公司成員及其連結的員工資料判定。
 - 密碼變更屬於 `users`，不寫入 `employees`；新密碼只保存單向雜湊。
 - 密碼欄位、複雜度與其他裝置登出規則仍待逐欄／逐項確認。
-- 詳細規劃見 [11-ui-my-profile.md](11-ui-my-profile.md)。
+- 詳細規劃見 [11-ui-my-profile.md](../ui/11-ui-my-profile.md)。
 
 ### 員工清單 UI 補充
 
@@ -235,7 +235,7 @@
 - 修改欄位為部門名稱、部門代碼、上層部門、狀態及部門說明。
 - 成員人數由員工目前有效的部門歷史紀錄計算，不存入 `departments`。
 - 部門主管、部門排序及拖拉調整尚未定案。
-- 詳細流程見 [08-ui-organization-structure.md](08-ui-organization-structure.md)。
+- 詳細流程見 [08-ui-organization-structure.md](../ui/08-ui-organization-structure.md)。
 
 
 

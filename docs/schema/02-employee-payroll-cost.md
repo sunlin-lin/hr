@@ -42,7 +42,7 @@
 - 員工編號與個人資料讀取 `employees`；到職與任職資料讀取目前有效的 `employee_employments`。
 - 部門、職稱及職務讀取各自目前有效的歷史紀錄。
 - 本頁不建立專用資料表，也不把任職或組織欄位搬入 `employees`。
-- 詳細規劃見 [11-ui-my-profile.md](11-ui-my-profile.md)。
+- 詳細規劃見 [11-ui-my-profile.md](../ui/11-ui-my-profile.md)。
 
 ## `employee_employments`
 
@@ -367,7 +367,7 @@
 - 不提供 PDF、下載或匯出。
 - 結算時保存公司、員工編號、姓名、部門及職稱顯示快照。
 - 結算時保存全部出勤計薪摘要，不得查看時即時重算。
-- 詳細規劃見 [16-ui-my-payroll.md](16-ui-my-payroll.md)。
+- 詳細規劃見 [16-ui-my-payroll.md](../ui/16-ui-my-payroll.md)。
 ### `payroll_details`
 
 **註釋：** 當期實際薪資明細，可來自長期設定、系統計算、臨時新增或人工調整。

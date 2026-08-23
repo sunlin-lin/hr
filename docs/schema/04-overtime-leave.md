@@ -39,7 +39,7 @@
 - 計酬方式為加班費或補休，一筆不可拆分；事由必填。
 - 本人提出且尚未審核的申請可自行撤銷；資料保留為已撤回，不得 DELETE。
 - 打卡被待審核加班引用時，需先撤回申請才能撤銷打卡；已核准加班所依打卡不得由員工直接撤銷。
-- 詳細規劃見 [15-ui-my-overtime.md](15-ui-my-overtime.md)。
+- 詳細規劃見 [15-ui-my-overtime.md](../ui/15-ui-my-overtime.md)。
 
 ### `overtime_approvals`
 
@@ -68,7 +68,7 @@
 - 薪資尚未核算時，可撤銷核准或撤銷退回並回到待審核。
 - 補休尚未使用時，可先撤銷補休額度再撤銷加班核准；已使用則不可直接撤銷。
 - 薪資開始核算或加班費已進入薪資後不可撤銷。
-- 詳細規劃見 [18-ui-overtime-approval.md](18-ui-overtime-approval.md)。
+- 詳細規劃見 [18-ui-overtime-approval.md](../ui/18-ui-overtime-approval.md)。
 
 ### `overtime_compensations`
 
@@ -345,7 +345,7 @@
 - 薪資尚未核算時，可撤銷核准：使用額度原路返還並依原分配重新凍結，重算出勤後回到待審核。
 - 薪資尚未核算時，可撤銷退回：重新凍結全部原分配後回到待審核。
 - 一般假別與補休各自使用自己的交易帳本，不得混用。
-- 詳細規劃見 [19-ui-leave-approval.md](19-ui-leave-approval.md)。
+- 詳細規劃見 [19-ui-leave-approval.md](../ui/19-ui-leave-approval.md)。
 
 ### `leave_request_documents`
 
@@ -389,7 +389,7 @@
 - 待審核先凍結額度，撤回／未核准原路返還，核准轉為使用；最早到期優先。
 - 一次申請可扣抵多筆發放額度，並由 `leave_request_allocations` 保存來源。
 - 已結算月份不得新增請假申請。
-- 詳細規劃見 [14-ui-my-leave.md](14-ui-my-leave.md)。
+- 詳細規劃見 [14-ui-my-leave.md](../ui/14-ui-my-leave.md)。
 
 ## 公司贈與假
 

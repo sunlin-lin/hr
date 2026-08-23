@@ -162,7 +162,7 @@
 - 上班地點與下班地點顯示 GPS 反查後的大約地址；主列表不直接顯示經緯度。
 - 工時與判定結果讀取 `attendance_results`；時間、來源及位置讀取正式打卡事件。
 - 打卡 GPS 的實際保存欄位留待打卡功能討論，本輪不得補猜。
-- 詳細規劃見 [09-ui-all-attendance.md](09-ui-all-attendance.md)。
+- 詳細規劃見 [09-ui-all-attendance.md](../ui/09-ui-all-attendance.md)。
 
 ## 已確認的 Dashboard 打卡與撤銷
 
@@ -174,7 +174,7 @@
 - 已鎖定日期不得由員工直接撤銷，應改走更正流程。
 - 撤銷後重新計算出勤結果；全體出勤主列表顯示有效打卡，明細保留撤銷歷史。
 - 撤銷相關正式欄位與 GPS 保存欄位尚待逐欄確認，不在本輪補猜。
-- 詳細規劃見 [10-ui-dashboard-attendance.md](10-ui-dashboard-attendance.md)。
+- 詳細規劃見 [10-ui-dashboard-attendance.md](../ui/10-ui-dashboard-attendance.md)。
 
 ## 已確認的「我的資料／出勤紀錄」UI
 
@@ -186,7 +186,7 @@
 - 點選日期可查看當日原始及已撤銷打卡等明細；目前只查看，補卡／更正入口尚未定案。
 - 統計由當月有效 `attendance_results` 彙總，不建立專用統計表。
 - 後端依 `users`、`company_users` 與其員工連結限制本人資料，不接受任意其他員工 ID。
-- 詳細規劃見 [12-ui-my-attendance.md](12-ui-my-attendance.md)。
+- 詳細規劃見 [12-ui-my-attendance.md](../ui/12-ui-my-attendance.md)。
 
 ## 出勤 Schema
 
@@ -239,7 +239,7 @@
 - 核准後才建立正式 `attendance_records`，來源為人工補登，且不建立 GPS。
 - 核准後重新計算 `attendance_results`。
 - 撤回欄位名稱與型態尚待確認。
-- 詳細規劃見 [13-ui-attendance-correction.md](13-ui-attendance-correction.md)。
+- 詳細規劃見 [13-ui-attendance-correction.md](../ui/13-ui-attendance-correction.md)。
 
 ### `attendance_correction_reviews`
 
@@ -255,7 +255,7 @@
 | `reason` | `text` | 條件必填 | 退回及撤銷審核結果時必填 |
 | `created_at` | `datetime` | 必填 | 建立時間 |
 
-歷程只能新增，不可修改或刪除。薪資尚未開始核算時，已核准及已退回結果均可撤銷並回到待審核；薪資開始核算後只可查看。詳細流程見 [17-ui-attendance-correction-approval.md](17-ui-attendance-correction-approval.md)。
+歷程只能新增，不可修改或刪除。薪資尚未開始核算時，已核准及已退回結果均可撤銷並回到待審核；薪資開始核算後只可查看。詳細流程見 [17-ui-attendance-correction-approval.md](../ui/17-ui-attendance-correction-approval.md)。
 
 ### `attendance_settings`
 

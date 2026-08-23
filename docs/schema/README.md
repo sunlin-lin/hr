@@ -41,19 +41,19 @@
 - [04-overtime-leave.md](04-overtime-leave.md)
 - [05-regulatory-system.md](05-regulatory-system.md)
 - [06-schema-dictionary.md](06-schema-dictionary.md) — 統一表格化資料字典
-- [07-ui-role-permission.md](07-ui-role-permission.md) — 系統設定／角色與權限 UI 設計、刪除規則及 Schema 缺口
-- [08-ui-organization-structure.md](08-ui-organization-structure.md) — 人事作業／組織架構列表、新增與修改流程
-- [09-ui-all-attendance.md](09-ui-all-attendance.md) — 人事作業／全體出勤按月查詢與位置顯示
-- [10-ui-dashboard-attendance.md](10-ui-dashboard-attendance.md) — 預設總覽、上下班打卡與撤銷規則
-- [11-ui-my-profile.md](11-ui-my-profile.md) — 我的資料／唯讀個資與變更密碼
-- [12-ui-my-attendance.md](12-ui-my-attendance.md) — 我的資料／本人按月出勤統計與列表
-- [13-ui-attendance-correction.md](13-ui-attendance-correction.md) — 我的資料／補打卡申請、撤回與審核
-- [14-ui-my-leave.md](14-ui-my-leave.md) — 我的資料／逐筆假期餘額與請假申請
-- [15-ui-my-overtime.md](15-ui-my-overtime.md) — 我的資料／加班申請、完整打卡前提與撤回
-- [16-ui-my-payroll.md](16-ui-my-payroll.md) — 我的資料／已結算薪資單、顯示與出勤快照
-- [17-ui-attendance-correction-approval.md](17-ui-attendance-correction-approval.md) — 簽核／補打卡簽核、撤銷審核與分頁
-- [18-ui-overtime-approval.md](18-ui-overtime-approval.md) — 簽核／加班簽核、整筆核准與撤銷結果
-- [19-ui-leave-approval.md](19-ui-leave-approval.md) — 簽核／請假簽核、整筆核准與額度返還
+- [07-ui-role-permission.md](../ui/07-ui-role-permission.md) — 系統設定／角色與權限 UI 設計、刪除規則及 Schema 缺口
+- [08-ui-organization-structure.md](../ui/08-ui-organization-structure.md) — 人事作業／組織架構列表、新增與修改流程
+- [09-ui-all-attendance.md](../ui/09-ui-all-attendance.md) — 人事作業／全體出勤按月查詢與位置顯示
+- [10-ui-dashboard-attendance.md](../ui/10-ui-dashboard-attendance.md) — 預設總覽、上下班打卡與撤銷規則
+- [11-ui-my-profile.md](../ui/11-ui-my-profile.md) — 我的資料／唯讀個資與變更密碼
+- [12-ui-my-attendance.md](../ui/12-ui-my-attendance.md) — 我的資料／本人按月出勤統計與列表
+- [13-ui-attendance-correction.md](../ui/13-ui-attendance-correction.md) — 我的資料／補打卡申請、撤回與審核
+- [14-ui-my-leave.md](../ui/14-ui-my-leave.md) — 我的資料／逐筆假期餘額與請假申請
+- [15-ui-my-overtime.md](../ui/15-ui-my-overtime.md) — 我的資料／加班申請、完整打卡前提與撤回
+- [16-ui-my-payroll.md](../ui/16-ui-my-payroll.md) — 我的資料／已結算薪資單、顯示與出勤快照
+- [17-ui-attendance-correction-approval.md](../ui/17-ui-attendance-correction-approval.md) — 簽核／補打卡簽核、撤銷審核與分頁
+- [18-ui-overtime-approval.md](../ui/18-ui-overtime-approval.md) — 簽核／加班簽核、整筆核准與撤銷結果
+- [19-ui-leave-approval.md](../ui/19-ui-leave-approval.md) — 簽核／請假簽核、整筆核准與額度返還
 
 ## 全域規則
 
