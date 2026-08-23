@@ -126,7 +126,7 @@
 | `id` | `uuid` | 必填 | PK |
 | `employee_id` | `uuid` | 必填 | FK，員工 |
 | `employment_type_code` | `integer` | 必填 | 1正職、2兼職、3約聘、4派遣、5工讀、6臨時、7顧問、8實習 |
-| `employment_nature_code` | `integer` | 必填 | 聘僱性質，例如1不定期、2定期契約 |
+| `employment_nature_code` | `integer` | 必填性待確認 | 任職性質代碼；原對話確認存在，但未可靠確認代碼值與 NULL 規則 |
 | `hire_date` | `date` | 必填 | 到職日 |
 | `leave_date` | `date` | 選填 | 離職日 |
 | `leave_reason_code` | `integer` | 選填 | 離職原因代碼 |
@@ -194,6 +194,7 @@
 | `regulatory_dataset_versions` | 政府法規資料版本與原始快照。 |
 | `regulatory_records` | Payroll 可查詢的標準化法規資料。 |
 | `regulatory_sync_logs` | 法規同步執行結果。 |
+
 
 
 
