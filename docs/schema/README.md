@@ -54,6 +54,8 @@
 - [17-ui-attendance-correction-approval.md](../ui/17-ui-attendance-correction-approval.md) — 簽核／補打卡簽核、撤銷審核與分頁
 - [18-ui-overtime-approval.md](../ui/18-ui-overtime-approval.md) — 簽核／加班簽核、整筆核准與撤銷結果
 - [19-ui-leave-approval.md](../ui/19-ui-leave-approval.md) — 簽核／請假簽核、整筆核准與額度返還
+- [20-employee-list.md](../ui/20-employee-list.md) — 人事作業／員工清單、新增、修改及離職
+- [21-ui-company-leave-grants.md](../ui/21-ui-company-leave-grants.md) — 人事作業／特休與補休贈與、發放列表及撤銷
 
 ## 全域規則
 
