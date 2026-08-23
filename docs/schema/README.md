@@ -41,6 +41,7 @@
 - [04-overtime-leave.md](04-overtime-leave.md)
 - [05-regulatory-system.md](05-regulatory-system.md)
 - [06-schema-dictionary.md](06-schema-dictionary.md) — 統一表格化資料字典
+- [07-ui-role-permission.md](07-ui-role-permission.md) — 系統設定／角色與權限 UI 設計、刪除規則及 Schema 缺口
 
 ## 全域規則
 
