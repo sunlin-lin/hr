@@ -56,6 +56,7 @@
 - [19-ui-leave-approval.md](../ui/19-ui-leave-approval.md) — 簽核／請假簽核、整筆核准與額度返還
 - [20-employee-list.md](../ui/20-employee-list.md) — 人事作業／員工清單、新增、修改及離職
 - [21-ui-company-leave-grants.md](../ui/21-ui-company-leave-grants.md) — 人事作業／特休與補休贈與、發放列表及撤銷
+- [22-ui-shift-settings.md](../ui/22-ui-shift-settings.md) — 人事作業／班別設定與完整排班模式範圍
 
 ## 全域規則
 
