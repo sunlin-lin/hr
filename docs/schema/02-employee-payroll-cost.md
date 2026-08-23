@@ -32,6 +32,14 @@
 
 **明確不含：** `status`、`hire_date`、`leave_date`。
 
+## 已確認的本人個資顯示
+
+- 「我的資料／個資」只供員工查看本人資料，不可直接修改。
+- 員工編號與個人資料讀取 `employees`；到職與任職資料讀取目前有效的 `employee_employments`。
+- 部門、職稱及職務讀取各自目前有效的歷史紀錄。
+- 本頁不建立專用資料表，也不把任職或組織欄位搬入 `employees`。
+- 詳細規劃見 [11-ui-my-profile.md](11-ui-my-profile.md)。
+
 ## `employee_employments`
 
 **註釋：** 員工每次任職關係；回任新增一筆。
