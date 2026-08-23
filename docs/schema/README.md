@@ -45,6 +45,7 @@
 - [08-ui-organization-structure.md](08-ui-organization-structure.md) — 人事作業／組織架構列表、新增與修改流程
 - [09-ui-all-attendance.md](09-ui-all-attendance.md) — 人事作業／全體出勤按月查詢與位置顯示
 - [10-ui-dashboard-attendance.md](10-ui-dashboard-attendance.md) — 預設總覽、上下班打卡與撤銷規則
+- [11-ui-my-profile.md](11-ui-my-profile.md) — 我的資料／唯讀個資與變更密碼
 
 ## 全域規則
 
