@@ -393,6 +393,8 @@
 
 ## 公司贈與假
 
+> 已確認的操作流程見 [人事作業／特休與補休贈與](../ui/21-ui-company-leave-grants.md)。
+
 公司贈與假是「公司直接核發給員工」，不是員工互相轉贈。批次表保存全批共同條件，逐員工表保存每人的發放結果；每筆成功贈與再產生 `leave_entitlements`，以 `source_type_code=2` 及 `source_id=company_leave_grants.id` 回溯來源。
 
 **定案規則：** 同一批次只能有一個假別、一種有薪／無薪性質、一個分鐘數及一組有效期間；`granted_minutes > 0`，禁止負數贈與。逐員工處理，個別失敗可重試。核發後不可直接改批次條件；撤銷只能收回尚未使用部分，已使用歷史保留。到期或離職後不可再用，但資料不得刪除。
@@ -412,7 +414,8 @@
 | `granted_minutes` | `integer` | 必填 | 每位員工核發的分鐘數，必須大於 0 |
 | `effective_from` | `date` | 必填 | 生效開始日 |
 | `effective_to` | `date` | 必填 | 生效結束日 |
-| `reason` | `text` | 必填 | 原因 |
+| `reason` | `text` | 必填 | 發放原因 |
+| `description` | `text` | 選填 | 公司內部備註 |
 | `created_by` | `bigint` | 必填 | 建立者 ID |
 | `created_at` | `datetime` | 必填 | 建立時間 |
 | `updated_at` | `datetime` | 必填 | 最後修改時間 |
@@ -433,13 +436,17 @@
 | `status_code` | `integer` | 必填 | 個別員工核發狀態；支援成功、失敗、撤銷及重試流程 |
 | `granted_by` | `bigint` | 必填 | 實際核發者 ID |
 | `granted_at` | `datetime` | 選填 | 核發成功時間 |
+| `failure_reason` | `text` | 選填 | 個別發放失敗原因；失敗時填寫 |
+| `cancelled_minutes` | `integer` | 必填 | 已撤銷分鐘數，預設 0 |
 | `cancelled_by` | `bigint` | 選填 | 撤銷者 ID |
 | `cancelled_at` | `datetime` | 選填 | 撤銷時間 |
 | `cancel_reason` | `text` | 選填 | 撤銷原因 |
 | `created_at` | `datetime` | 必填 | 建立時間 |
 | `updated_at` | `datetime` | 必填 | 最後修改時間 |
 
-逐員工處理，個別失敗可單獨重試；公司直接核發，員工不可互贈；生效前可撤銷，已使用歷史不可抹除；到期或離職後不可使用但資料保留。
+逐員工處理，個別失敗可單獨重試且不得重複核發給已成功員工；公司直接核發，員工不可互贈。撤銷以個別員工為單位：未使用可全部撤銷，部分使用只能撤銷剩餘分鐘，已全部使用、已完成薪資結算或已轉薪資者不可撤銷；已撤銷不得再次撤銷，只能重新發放。撤銷時 `cancelled_minutes > 0`，且 `cancelled_by`、`cancelled_at`、`cancel_reason` 必填；原核發及已使用歷史不可抹除。到期或離職後不可再用，但資料保留。
+
+撤銷不得直接扣改原核發交易；必須在 `leave_balance_transactions` 新增公司贈與撤銷的扣除交易，並只扣除尚未使用餘額。發放列表以 `company_leave_grants` 為一人一筆，已使用與剩餘分鐘由 `leave_entitlements` 及交易帳本計算。
 
 
 
