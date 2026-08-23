@@ -26,6 +26,11 @@
 | `phone_encrypted` | `binary` | 必填性待確認 | 電話加密值 |
 | `email_encrypted` | `binary` | 必填性待確認 | Email 加密值 |
 | `address_encrypted` | `binary` | 必填性待確認 | 地址加密值 |
+| `company_name_snapshot` | `string` | 必填 | 結算當時的公司名稱；歷史薪資單顯示值 |
+| `employee_code_snapshot` | `string` | 必填 | 結算當時的員工編號 |
+| `employee_name_snapshot` | `string` | 必填 | 結算當時的員工姓名 |
+| `department_name_snapshot` | `string` | 條件必填 | 結算當時的部門名稱；無部門時可為 NULL |
+| `job_title_name_snapshot` | `string` | 選填 | 結算當時的職稱名稱 |
 | `created_at` | `datetime` | 必填 | 建立時間 |
 | `updated_at` | `datetime` | 必填 | 最後修改時間 |
 | `deleted_at` | `datetime` | 選填 | Soft Delete 時間 |
@@ -299,6 +304,36 @@
 | `updated_at` | `datetime` | 必填 | 修改時間 |
 
 **關聯與約束：** 原則上 `UNIQUE(payroll_period_id, employee_id)`；同一薪資單的 `employment_id` 必須屬於該員工。核准、發薪、結算後不得因調薪或法規更新重算覆蓋；錯誤於後續期間補發／扣回。
+
+### `payroll_attendance_snapshots`
+
+**資料表註釋：** 薪資結算當下實際採用的出勤、工時、加班、請假與異常摘要；供歷史薪資單顯示與稽核。
+
+**設計理由：** 出勤結果日後可能因重算或資料修正改變，薪資單必須保留結算時真正採用的數值，才能持續說明當期薪資計算依據。
+
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `uuid` | 必填 | PK |
+| `payroll_id` | `uuid` | 必填 | FK → `payrolls.id`；一張薪資單一筆快照 |
+| `attendance_days` | `decimal(6,2)` | 必填 | 結算採用的出勤天數；支援半日 |
+| `worked_minutes` | `integer` | 必填 | 結算採用的實際工時分鐘 |
+| `overtime_minutes` | `integer` | 必填 | 結算採用的核准加班分鐘 |
+| `leave_minutes` | `integer` | 必填 | 結算採用的請假分鐘 |
+| `late_days` | `integer` | 必填 | 結算採用的遲到天數 |
+| `early_leave_days` | `integer` | 必填 | 結算採用的早退天數 |
+| `absence_days` | `decimal(6,2)` | 必填 | 結算採用的缺勤天數；支援部分日 |
+| `created_at` | `datetime` | 必填 | 快照建立時間 |
+
+**關聯與約束：** `UNIQUE(payroll_id)`；所有數值不得為負；薪資結算後不可修改。分鐘於 UI 換算成小時，但資料仍以分鐘保存。
+
+### 已確認的本人薪資單 UI
+
+- 員工只看得到本人已結算薪資單；不另設發布狀態。
+- 列表顯示期間、發薪日、應發、扣款、實發及發放狀態，操作只提供查看。
+- 不提供 PDF、下載或匯出。
+- 結算時保存公司、員工編號、姓名、部門及職稱顯示快照。
+- 結算時保存全部出勤計薪摘要，不得查看時即時重算。
+- 詳細規劃見 [16-ui-my-payroll.md](16-ui-my-payroll.md)。
 ### `payroll_details`
 
 **註釋：** 當期實際薪資明細，可來自長期設定、系統計算、臨時新增或人工調整。
