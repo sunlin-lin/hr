@@ -20,12 +20,12 @@
 | `employee_code` | `string` | 必填 | 公司內員工編號 |
 | `name` | `string` | 必填 | 顯示名稱 |
 | `gender` | `string` | 必填 | 性別代碼 |
-| `identity_number_encrypted` | `binary` | 必填 | 身分證加密值 |
-| `identity_number_hash` | `binary` | 必填 | 身分證查詢 Hash |
-| `birthday_encrypted` | `binary` | 必填 | 出生年月日加密值 |
-| `phone_encrypted` | `binary` | 必填 | 電話加密值 |
-| `email_encrypted` | `binary` | 必填 | Email 加密值 |
-| `address_encrypted` | `binary` | 必填 | 地址加密值 |
+| `identity_number_encrypted` | `binary` | 必填性待確認 | 身分證加密值；原對話確認欄位，未明定 NULL 規則 |
+| `identity_number_hash` | `binary` | 必填性待確認 | 身分證查詢 Hash；原對話確認欄位，未明定 NULL 規則 |
+| `birthday_encrypted` | `binary` | 必填性待確認 | 出生年月日加密值 |
+| `phone_encrypted` | `binary` | 必填性待確認 | 電話加密值 |
+| `email_encrypted` | `binary` | 必填性待確認 | Email 加密值 |
+| `address_encrypted` | `binary` | 必填性待確認 | 地址加密值 |
 | `created_at` | `datetime` | 必填 | 建立時間 |
 | `updated_at` | `datetime` | 必填 | 最後修改時間 |
 | `deleted_at` | `datetime` | 選填 | Soft Delete 時間 |
@@ -42,7 +42,17 @@
 |---|---|---|---|
 | `id` | `uuid` | 必填 | 主鍵，資料唯一識別碼 |
 | `employee_id` | `uuid` | 必填 | 員工外鍵 |
-| `employment_type_code` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `employment_type_code` | `integer` | 必填 | 僱用型態：1 正職、2 兼職、3 約聘、4 派遣、5 工讀、6 臨時、7 顧問、8 實習 |
+| `employment_nature_code` | `integer` | 必填性待確認 | 任職性質代碼；原對話確認存在，但未可靠重列代碼值 |
+| `hire_date` | `date` | 必填 | 本次任職到職日 |
+| `leave_date` | `date` | 選填 | 本次任職離職日；在職為 NULL |
+| `leave_reason_code` | `integer` | 選填 | 離職原因代碼 |
+| `status` | `string` | 必填 | 本次任職狀態；不用 DB ENUM |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 修改時間 |
+| `deleted_at` | `datetime` | 選填 | Soft Delete 時間 |
+
+**關聯與約束：** FK `employee_id → employees.id`；同一員工同一時間最多一筆有效任職；離職回任新增資料，不修改舊任職；不建立 `employment_sequence`。
 
 ## 人事歷史表
 
@@ -104,7 +114,7 @@
 | `code` | `string` | 必填 | 業務代碼 |
 | `name` | `string` | 必填 | 顯示名稱 |
 | `description` | `string` | 必填 | 用途或異動說明 |
-| `is_system` | `boolean` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `is_system` | `boolean` | 必填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
 | `status` | `string` | 必填 | 狀態代碼，不使用 DB ENUM |
 | `created_at` | `datetime` | 必填 | 建立時間 |
 | `updated_at` | `datetime` | 必填 | 最後修改時間 |
@@ -140,12 +150,12 @@
 | `identity_number_encrypted` | `binary` | 必填 | 身分證加密值 |
 | `identity_number_hash` | `binary` | 必填 | 身分證查詢 Hash |
 | `birthday_encrypted` | `binary` | 必填 | 出生年月日加密值 |
-| `relationship_code` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
-| `is_student` | `boolean` | 必填 | 依原對話之欄位用途；未新增額外規則 |
-| `is_disabled` | `boolean` | 必填 | 依原對話之欄位用途；未新增額外規則 |
-| `is_unable_to_work` | `boolean` | 必填 | 依原對話之欄位用途；未新增額外規則 |
-| `is_cohabiting` | `boolean` | 必填 | 依原對話之欄位用途；未新增額外規則 |
-| `effective_date` | `date` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `relationship_code` | `integer` | 必填 | 關係：1 配偶、2 父、3 母、4 子女、5 兄弟姊妹、6 祖父母、7 孫子女、8 其他 |
+| `is_student` | `boolean` | 必填 | 是否為學生 |
+| `is_disabled` | `boolean` | 必填 | 是否身心障礙 |
+| `is_unable_to_work` | `boolean` | 必填 | 是否無謀生能力 |
+| `is_cohabiting` | `boolean` | 必填 | 是否同居共營生活 |
+| `effective_date` | `date` | 必填 | 開始列入扶養日期 |
 | `end_date` | `date` | 選填 | 結束日期 |
 | `status` | `string` | 必填 | 狀態代碼，不使用 DB ENUM |
 | `created_at` | `datetime` | 必填 | 建立時間 |
@@ -164,7 +174,7 @@
 |---|---|---|---|
 | `id` | `bigint/uuid` | 必填 | 主鍵，資料唯一識別碼 |
 | `employee_id` | `FK` | 必填 | 員工外鍵 |
-| `withholding_method_code` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `withholding_method_code` | `integer` | 必填 | 扣繳方式：1 薪資所得扣繳稅額表、2 固定 5% |
 
 ## 薪資核心
 
@@ -180,7 +190,7 @@
 | `company_id` | `uuid` | 選填 | 所屬公司外鍵 |
 | `code` | `string` | 必填 | 業務代碼 |
 | `name` | `string` | 必填 | 顯示名稱 |
-| `type_code` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `type_code` | `integer` | 必填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
 
 ### `employee_salary_settings`
 
@@ -193,7 +203,7 @@
 | `id` | `uuid` | 必填 | 主鍵，資料唯一識別碼 |
 | `employment_id` | `uuid` | 必填 | 任職紀錄外鍵 |
 | `salary_item_id` | `uuid` | 必填 | 薪資項目外鍵 |
-| `calculation_type_code` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `calculation_type_code` | `integer` | 必填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
 | `amount` | `decimal` | 必填 | 金額或計算基礎值 |
 | `start_date` | `date` | 必填 | 開始日期 |
 | `end_date` | `date` | 選填 | 結束日期 |
@@ -204,7 +214,20 @@
 
 ### `payroll_settings`
 
-**註釋：** 公司計薪週期與發薪制度。已確認存在；原對話完整欄位未在最終摘要全部重列，實作前按原文補錄。
+**註釋：** 公司計薪週期與發薪制度；設定與每期計薪結果分離。
+
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `uuid` | 必填 | PK |
+| `company_id` | `uuid` | 必填 | FK → `companies.id` |
+| `payroll_frequency_code` | `integer` | 必填 | 計薪頻率代碼 |
+| `payroll_start_day` | `integer` | 必填 | 計薪週期起日 |
+| `payroll_end_day` | `integer` | 必填 | 計薪週期迄日 |
+| `payday_type_code` | `integer` | 必填 | 發薪日規則類型代碼 |
+| `payday` | `integer` | 必填 | 發薪日 |
+| `description` | `string` | 選填 | 設定說明 |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 修改時間 |
 
 **設計理由：** 薪資制度的公司級參數集中於設定表，可避免每一期薪資重複保存相同規則，也便於公司分別設定。
 
@@ -240,12 +263,12 @@
 
 | 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
 |---|---|---|---|
-| `id` | `原對話此處未重列` | 待核對 | 主鍵，資料唯一識別碼 |
-| `payroll_id` | `原對話此處未重列` | 待核對 | 薪資結算外鍵 |
+| `id` | `型態待恢復` | 待核對 | 主鍵，資料唯一識別碼 |
+| `payroll_id` | `型態待恢復` | 待核對 | 薪資結算外鍵 |
 | `salary_item_id` | `nullable` | 選填 | 薪資項目外鍵 |
-| `item_name` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
-| `type_code` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
-| `source_type_code` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
+| `item_name` | `string` | 必填 | 薪資項目名稱快照，避免主檔改名影響歷史 |
+| `type_code` | `integer` | 必填 | 1 應發、2 扣款 |
+| `source_type_code` | `integer` | 必填 | 1 員工薪資設定、2 系統計算、3 臨時新增、4 人工調整 |
 
 ### `employee_salary_bank_accounts`
 
@@ -281,8 +304,8 @@
 | `company_id` | `uuid` | 選填 | 所屬公司外鍵 |
 | `code` | `string` | 必填 | 業務代碼 |
 | `name` | `string` | 必填 | 顯示名稱 |
-| `type_code` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
-| `is_active` | `boolean` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `type_code` | `integer` | 必填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
+| `is_active` | `boolean` | 必填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
 | `description` | `string` | 必填 | 用途或異動說明 |
 | `created_at` | `datetime` | 必填 | 建立時間 |
 | `updated_at` | `datetime` | 必填 | 最後修改時間 |
@@ -300,15 +323,16 @@
 | `company_id` | `uuid` | 必填 | 所屬公司外鍵 |
 | `employee_id` | `uuid` | 必填 | 員工外鍵 |
 | `employment_id` | `uuid` | 必填 | 任職紀錄外鍵 |
-| `personnel_cost_item_id` | `uuid` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `personnel_cost_item_id` | `uuid` | 必填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
 | `payroll_id` | `uuid` | 選填 | 薪資結算外鍵 |
-| `cost_date` | `date` | 必填 | 依原對話之欄位用途；未新增額外規則 |
-| `cost_period` | `string` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `cost_date` | `date` | 必填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
+| `cost_period` | `string` | 必填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
 | `amount` | `decimal` | 必填 | 金額或計算基礎值 |
-| `source_type_code` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `source_type_code` | `integer` | 必填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
 | `description` | `string` | 必填 | 用途或異動說明 |
 | `created_at` | `datetime` | 必填 | 建立時間 |
 | `updated_at` | `datetime` | 必填 | 最後修改時間 |
+
 
 
 
