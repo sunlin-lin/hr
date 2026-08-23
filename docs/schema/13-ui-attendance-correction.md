@@ -111,12 +111,9 @@ attendance_correction_requests
 
 申請本身不是正式打卡。
 
-## 已確認的審核欄位
+## 審核歷程設計已由後續方案取代
 
 | 欄位 | 資料型態 | 必填性 | 欄位註釋 |
 |---|---|---|---|
-| `reviewed_by` | `uuid` | 選填 | 審核者；待審核及已撤回時為空 |
-| `reviewed_at` | `datetime` | 選填 | 完成審核時間 |
-| `review_comment` | `text` | 條件必填 | 審核意見；未核准時必填 |
 
-撤回必須保存撤回狀態及時間，但正式欄位名稱與型態尚未逐欄確認。
+補打卡審核已改採 `attendance_correction_reviews` 保存完整核准、退回與撤銷歷程；本文件原列的 `reviewed_*` 單次欄位不再採用。詳細規劃見 [17-ui-attendance-correction-approval.md](17-ui-attendance-correction-approval.md)。
