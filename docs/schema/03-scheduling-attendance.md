@@ -226,9 +226,8 @@
 | `requested_clocked_at` | `datetime` | 必填 | 申請補登的實際打卡時間；較晚版本曾寫作 `requested_at`，語意以此欄為準 |
 | `reason` | `型態待恢復` | 待核對 | 原因 |
 | `status_code` | `型態待恢復` | 待核對 | 流程或資料狀態代碼 |
-| `reviewed_by` | `uuid` | 選填 | 審核者；待審核及已撤回時為 NULL |
-| `reviewed_at` | `datetime` | 選填 | 完成審核時間 |
-| `review_comment` | `text` | 條件必填 | 審核意見；未核准時必填 |
+
+**審核欄位更新：** 原 `reviewed_by`、`reviewed_at`、`review_comment` 單次欄位已由 `attendance_correction_reviews` 歷程表取代。
 
 **已確認流程與約束：**
 
