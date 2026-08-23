@@ -18,12 +18,12 @@
 | `company_id` | `uuid` | 必填 | 所屬公司外鍵 |
 | `code` | `varchar` | 必填 | 業務代碼 |
 | `name` | `varchar` | 必填 | 顯示名稱 |
-| `work_type_code` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
-| `is_overnight` | `boolean` | 必填 | 依原對話之欄位用途；未新增額外規則 |
-| `is_flexible` | `boolean` | 必填 | 依原對話之欄位用途；未新增額外規則 |
-| `required_work_minutes` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `work_type_code` | `integer` | 必填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
+| `is_overnight` | `boolean` | 必填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
+| `is_flexible` | `boolean` | 必填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
+| `required_work_minutes` | `integer` | 必填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
 | `description` | `text` | 必填 | 用途或異動說明 |
-| `is_active` | `boolean` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `is_active` | `boolean` | 必填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
 | `created_at` | `datetime` | 必填 | 建立時間 |
 | `updated_at` | `datetime` | 必填 | 最後修改時間 |
 | `deleted_at` | `datetime` | 選填 | Soft Delete 時間 |
@@ -36,13 +36,13 @@
 
 | 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
 |---|---|---|---|
-| `id` | `原對話此處未重列` | 待核對 | 主鍵，資料唯一識別碼 |
-| `shift_definition_id` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
-| `sequence_no` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
-| `start_time` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
-| `end_time` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
-| `end_day_offset` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
-| `work_minutes` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
+| `id` | `型態待恢復` | 待核對 | 主鍵，資料唯一識別碼 |
+| `shift_definition_id` | `uuid` | 必填 | FK → `shift_definitions.id` |
+| `sequence_no` | `integer` | 必填 | 同一班別工作時段順序 |
+| `start_time` | `time` | 必填 | 工作時段開始時間 |
+| `end_time` | `time` | 必填 | 工作時段結束時間 |
+| `end_day_offset` | `integer` | 必填 | 結束日偏移；跨日班用 1 |
+| `work_minutes` | `integer` | 必填 | 此工作時段應工作分鐘數 |
 
 ### `shift_breaks`
 
@@ -52,13 +52,13 @@
 
 | 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
 |---|---|---|---|
-| `id` | `原對話此處未重列` | 待核對 | 主鍵，資料唯一識別碼 |
-| `shift_definition_id` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
-| `sequence_no` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
-| `start_time` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
-| `end_time` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
-| `break_minutes` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
-| `is_paid` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
+| `id` | `型態待恢復` | 待核對 | 主鍵，資料唯一識別碼 |
+| `shift_definition_id` | `uuid` | 必填 | FK → `shift_definitions.id` |
+| `sequence_no` | `integer` | 必填 | 同一班別休息時段順序 |
+| `start_time` | `time` | 必填 | 休息開始時間 |
+| `end_time` | `time` | 必填 | 休息結束時間 |
+| `break_minutes` | `integer` | 必填 | 休息分鐘數 |
+| `is_paid` | `boolean` | 必填 | 是否為有薪休息 |
 
 ### `schedule_rules` / `schedule_rule_details`
 
@@ -94,8 +94,8 @@
 | `start_date` | `date` | 必填 | 開始日期 |
 | `end_date` | `date` | 必填 | 結束日期 |
 | `status_code` | `integer` | 必填 | 流程或資料狀態代碼 |
-| `published_at` | `datetime` | 選填 | 依原對話之欄位用途；未新增額外規則 |
-| `published_by` | `uuid` | 選填 | 依原對話之欄位用途；未新增額外規則 |
+| `published_at` | `datetime` | 選填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
+| `published_by` | `uuid` | 選填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
 | `created_at` | `datetime` | 必填 | 建立時間 |
 | `updated_at` | `datetime` | 必填 | 最後修改時間 |
 
@@ -107,15 +107,15 @@
 
 | 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
 |---|---|---|---|
-| `id` | `原對話此處未重列` | 待核對 | 主鍵，資料唯一識別碼 |
-| `schedule_period_id` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
-| `company_id` | `原對話此處未重列` | 待核對 | 所屬公司外鍵 |
-| `employee_id` | `原對話此處未重列` | 待核對 | 員工外鍵 |
-| `employment_id` | `原對話此處未重列` | 待核對 | 任職紀錄外鍵 |
-| `schedule_date` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
-| `shift_definition_id` | `nullable` | 選填 | 依原對話之欄位用途；未新增額外規則 |
-| `schedule_day_type_code` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
-| `scheduled_work_flag` | `boolean` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `id` | `型態待恢復` | 待核對 | 主鍵，資料唯一識別碼 |
+| `schedule_period_id` | `uuid` | 選填 | FK → `schedule_periods.id`；直接建立日排班時可為 NULL |
+| `company_id` | `型態待恢復` | 待核對 | 所屬公司外鍵 |
+| `employee_id` | `型態待恢復` | 待核對 | 員工外鍵 |
+| `employment_id` | `型態待恢復` | 待核對 | 任職紀錄外鍵 |
+| `schedule_date` | `date` | 必填 | 排班日期 |
+| `shift_definition_id` | `uuid` | 選填 | FK → `shift_definitions.id`；非工作日可為 NULL |
+| `schedule_day_type_code` | `integer` | 必填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
+| `scheduled_work_flag` | `boolean` | 必填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
 
 規則：歷史班表不得被新規則覆蓋；零工可直接建立；國定假日不等於每個員工休假；加班資格由該日班表性質與是否排定工作共同判定；不建立 `employee_holiday_calendars`。
 
@@ -128,10 +128,10 @@
 | 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
 |---|---|---|---|
 | `id` | `uuid` | 必填 | 主鍵，資料唯一識別碼 |
-| `employee_schedule_id` | `uuid` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `employee_schedule_id` | `uuid` | 必填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
 | `employee_id` | `uuid` | 必填 | 員工外鍵 |
-| `original_shift_id` | `uuid` | 選填 | 依原對話之欄位用途；未新增額外規則 |
-| `new_shift_id` | `uuid` | 選填 | 依原對話之欄位用途；未新增額外規則 |
+| `original_shift_id` | `uuid` | 選填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
+| `new_shift_id` | `uuid` | 選填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
 
 ## 出勤 Schema
 
@@ -146,9 +146,9 @@
 | `id` | `uuid` | 必填 | 主鍵，資料唯一識別碼 |
 | `employee_id` | `uuid` | 必填 | 員工外鍵 |
 | `employment_id` | `uuid` | 必填 | 任職紀錄外鍵 |
-| `employee_schedule_id` | `uuid` | 選填 | 依原對話之欄位用途；未新增額外規則 |
-| `work_date` | `date` | 必填 | 依原對話之欄位用途；未新增額外規則 |
-| `attendance_type_code` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `employee_schedule_id` | `uuid` | 選填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
+| `work_date` | `date` | 必填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
+| `attendance_type_code` | `integer` | 必填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
 
 規則：有效上班卡後才能打下班卡；兩種卡均可撤銷；撤銷不 DELETE；GPS 選填。
 
@@ -160,14 +160,14 @@
 
 | 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
 |---|---|---|---|
-| `id` | `原對話此處未重列` | 待核對 | 主鍵，資料唯一識別碼 |
-| `employee_id` | `原對話此處未重列` | 待核對 | 員工外鍵 |
-| `employment_id` | `原對話此處未重列` | 待核對 | 任職紀錄外鍵 |
-| `employee_schedule_id` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
-| `attendance_type_code` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
-| `requested_clocked_at` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
-| `reason` | `原對話此處未重列` | 待核對 | 原因 |
-| `status_code` | `原對話此處未重列` | 待核對 | 流程或資料狀態代碼 |
+| `id` | `型態待恢復` | 待核對 | 主鍵，資料唯一識別碼 |
+| `employee_id` | `型態待恢復` | 待核對 | 員工外鍵 |
+| `employment_id` | `型態待恢復` | 待核對 | 任職紀錄外鍵 |
+| `employee_schedule_id` | `uuid` | 必填 | FK → `employee_schedules.id` |
+| `attendance_type_code` | `integer` | 必填 | 申請補登的上班／下班事件類型 |
+| `requested_clocked_at` | `datetime` | 必填 | 申請補登的實際打卡時間；較晚版本曾寫作 `requested_at`，語意以此欄為準 |
+| `reason` | `型態待恢復` | 待核對 | 原因 |
+| `status_code` | `型態待恢復` | 待核對 | 流程或資料狀態代碼 |
 
 ### `attendance_settings`
 
@@ -189,5 +189,6 @@
 | 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
 |---|---|---|---|
 | — | — | — | 原對話已確認此資料表／資料責任，但此輪未能可靠恢復逐欄最終版本；不自行猜欄位。 |
+
 
 
