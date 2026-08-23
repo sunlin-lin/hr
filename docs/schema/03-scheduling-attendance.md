@@ -10,15 +10,45 @@
 
 **註釋：** 班別主檔。
 
-`id uuid PK`、`company_id uuid FK`、`code varchar`、`name varchar`、`work_type_code integer`、`is_overnight boolean`、`is_flexible boolean`、`required_work_minutes integer`、`description text`、`is_active boolean`、`created_at datetime`、`updated_at datetime`、`deleted_at datetime nullable`。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `uuid` | 必填 | 主鍵，資料唯一識別碼 |
+| `company_id` | `uuid` | 必填 | 所屬公司外鍵 |
+| `code` | `varchar` | 必填 | 業務代碼 |
+| `name` | `varchar` | 必填 | 顯示名稱 |
+| `work_type_code` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `is_overnight` | `boolean` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `is_flexible` | `boolean` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `required_work_minutes` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `description` | `text` | 必填 | 用途或異動說明 |
+| `is_active` | `boolean` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 最後修改時間 |
+| `deleted_at` | `datetime` | 選填 | Soft Delete 時間 |
 
 ### `shift_work_periods`
 
-**註釋：** 班別內實際工作區段，支援一天多段及跨日。核心欄位：`id`、`shift_definition_id`、`sequence_no`、`start_time`、`end_time`、`end_day_offset`、`work_minutes`、時間欄位。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `原對話此處未重列` | 待核對 | 主鍵，資料唯一識別碼 |
+| `shift_definition_id` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
+| `sequence_no` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
+| `start_time` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
+| `end_time` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
+| `end_day_offset` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
+| `work_minutes` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
 
 ### `shift_breaks`
 
-**註釋：** 班別休息區段。核心欄位：`id`、`shift_definition_id`、`sequence_no`、`start_time`、`end_time`、`break_minutes`、`is_paid`、時間欄位。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `原對話此處未重列` | 待核對 | 主鍵，資料唯一識別碼 |
+| `shift_definition_id` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
+| `sequence_no` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
+| `start_time` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
+| `end_time` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
+| `break_minutes` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
+| `is_paid` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
 
 ### `schedule_rules` / `schedule_rule_details`
 
@@ -30,13 +60,34 @@
 
 ### `schedule_periods`
 
-`id uuid PK`、`company_id uuid FK`、`name string`、`start_date date`、`end_date date`、`status_code integer`、`published_at datetime nullable`、`published_by uuid nullable`、`created_at datetime`、`updated_at datetime`。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `uuid` | 必填 | 主鍵，資料唯一識別碼 |
+| `company_id` | `uuid` | 必填 | 所屬公司外鍵 |
+| `name` | `string` | 必填 | 顯示名稱 |
+| `start_date` | `date` | 必填 | 開始日期 |
+| `end_date` | `date` | 必填 | 結束日期 |
+| `status_code` | `integer` | 必填 | 流程或資料狀態代碼 |
+| `published_at` | `datetime` | 選填 | 依原對話之欄位用途；未新增額外規則 |
+| `published_by` | `uuid` | 選填 | 依原對話之欄位用途；未新增額外規則 |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 最後修改時間 |
 
 ### `employee_schedules`
 
 **註釋：** 員工某日最終有效班表快照；排班確定／發布時產生。
 
-核心欄位：`id`、`schedule_period_id`、`company_id`、`employee_id`、`employment_id`、`schedule_date`、`shift_definition_id nullable`、`schedule_day_type_code integer`、`scheduled_work_flag boolean`、預定起訖時間、來源代碼、狀態及時間欄位。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `原對話此處未重列` | 待核對 | 主鍵，資料唯一識別碼 |
+| `schedule_period_id` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
+| `company_id` | `原對話此處未重列` | 待核對 | 所屬公司外鍵 |
+| `employee_id` | `原對話此處未重列` | 待核對 | 員工外鍵 |
+| `employment_id` | `原對話此處未重列` | 待核對 | 任職紀錄外鍵 |
+| `schedule_date` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
+| `shift_definition_id` | `nullable` | 選填 | 依原對話之欄位用途；未新增額外規則 |
+| `schedule_day_type_code` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `scheduled_work_flag` | `boolean` | 必填 | 依原對話之欄位用途；未新增額外規則 |
 
 規則：歷史班表不得被新規則覆蓋；零工可直接建立；國定假日不等於每個員工休假；加班資格由該日班表性質與是否排定工作共同判定；不建立 `employee_holiday_calendars`。
 
@@ -44,7 +95,13 @@
 
 **註釋：** 已發布班表異動／調班歷史。
 
-`id uuid PK`、`employee_schedule_id uuid FK`、`employee_id uuid FK`、`original_shift_id uuid nullable`、`new_shift_id uuid nullable`、原／新日期性質、原／新是否工作、`reason string`、`status_code integer`、`requested_by uuid`、`approved_by uuid nullable`、`approved_at datetime nullable`、`effective_at datetime`、`created_at datetime`、`updated_at datetime`。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `uuid` | 必填 | 主鍵，資料唯一識別碼 |
+| `employee_schedule_id` | `uuid` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `employee_id` | `uuid` | 必填 | 員工外鍵 |
+| `original_shift_id` | `uuid` | 選填 | 依原對話之欄位用途；未新增額外規則 |
+| `new_shift_id` | `uuid` | 選填 | 依原對話之欄位用途；未新增額外規則 |
 
 ## 出勤 Schema
 
@@ -52,7 +109,14 @@
 
 **註釋：** 正常或核准補登形成的正式打卡事件。
 
-`id uuid PK`、`employee_id uuid FK`、`employment_id uuid FK`、`employee_schedule_id uuid nullable FK`、`work_date date`、`attendance_type_code integer`（1上班、2下班）、`clocked_at datetime`、`latitude decimal nullable`、`longitude decimal nullable`、`source_type_code integer`、撤銷狀態／時間／人員及建立時間欄位。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `uuid` | 必填 | 主鍵，資料唯一識別碼 |
+| `employee_id` | `uuid` | 必填 | 員工外鍵 |
+| `employment_id` | `uuid` | 必填 | 任職紀錄外鍵 |
+| `employee_schedule_id` | `uuid` | 選填 | 依原對話之欄位用途；未新增額外規則 |
+| `work_date` | `date` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `attendance_type_code` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
 
 規則：有效上班卡後才能打下班卡；兩種卡均可撤銷；撤銷不 DELETE；GPS 選填。
 
@@ -60,7 +124,16 @@
 
 **註釋：** 忘打卡補登申請；上班與下班分開申請。
 
-核心欄位：`id`、`employee_id`、`employment_id`、`employee_schedule_id`、`attendance_type_code`、`requested_clocked_at`、`reason`、`status_code`、送出／核准／拒絕人員與時間、建立／修改時間。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `原對話此處未重列` | 待核對 | 主鍵，資料唯一識別碼 |
+| `employee_id` | `原對話此處未重列` | 待核對 | 員工外鍵 |
+| `employment_id` | `原對話此處未重列` | 待核對 | 任職紀錄外鍵 |
+| `employee_schedule_id` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
+| `attendance_type_code` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
+| `requested_clocked_at` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
+| `reason` | `原對話此處未重列` | 待核對 | 原因 |
+| `status_code` | `原對話此處未重列` | 待核對 | 流程或資料狀態代碼 |
 
 ### `attendance_settings`
 
