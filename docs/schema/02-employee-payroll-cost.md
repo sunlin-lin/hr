@@ -190,7 +190,17 @@
 | `company_id` | `uuid` | 選填 | 所屬公司外鍵 |
 | `code` | `string` | 必填 | 業務代碼 |
 | `name` | `string` | 必填 | 顯示名稱 |
-| `type_code` | `integer` | 必填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
+| `type_code` | `integer` | 必填 | 1 應發、2 扣款 |
+| `calculation_type_code` | `integer` | 必填 | 計算方式代碼 |
+| `is_taxable` | `boolean` | 必填 | 是否計入所得稅計算 |
+| `is_insurable` | `boolean` | 必填 | 是否計入投保薪資計算 |
+| `is_active` | `boolean` | 必填 | 是否啟用 |
+| `description` | `string` | 選填 | 項目說明 |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 修改時間 |
+| `deleted_at` | `datetime` | 選填 | Soft Delete 時間 |
+
+**關聯與約束：** `company_id=NULL` 表示系統預設項目，非 NULL 表示公司自訂項目；公司內 `code` 不得重複。薪資項目只是定義，當期名稱與金額仍須 Snapshot 到 `payroll_details`。
 
 ### `employee_salary_settings`
 
@@ -214,6 +224,8 @@
 
 ### `payroll_settings`
 
+**資料表名稱：** `payroll_settings`
+
 **註釋：** 公司計薪週期與發薪制度；設定與每期計薪結果分離。
 
 | 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
@@ -231,10 +243,10 @@
 
 **設計理由：** 薪資制度的公司級參數集中於設定表，可避免每一期薪資重複保存相同規則，也便於公司分別設定。
 
+**關聯：** `company_id → companies.id`。
 
-| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
-|---|---|---|---|
-| — | — | — | 原對話已確認此資料表／資料責任，但此輪未能可靠恢復逐欄最終版本；不自行猜欄位。 |
+**約束：** 每家公司使用自己的計薪設定；週期起訖與發薪日必須符合 `payroll_frequency_code`、`payday_type_code` 所代表的規則。設定只負責產生新計薪期間，不得回頭修改既有 `payroll_periods` 或已結算薪資。
+
 ### `payroll_periods`
 
 **註釋：** 實際計薪期間，如 26 日至次月 25 日；包含期間開始、結束與發薪日。
@@ -287,12 +299,18 @@
 
 | 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
 |---|---|---|---|
-| `id` | `型態待恢復` | 待核對 | 主鍵，資料唯一識別碼 |
-| `payroll_id` | `型態待恢復` | 待核對 | 薪資結算外鍵 |
-| `salary_item_id` | `nullable` | 選填 | 薪資項目外鍵 |
+| `id` | `uuid` | 必填 | PK，薪資明細 ID |
+| `payroll_id` | `uuid` | 必填 | FK → `payrolls.id` |
+| `salary_item_id` | `uuid` | 選填 | FK → `salary_items.id`；臨時項目可為 NULL |
 | `item_name` | `string` | 必填 | 薪資項目名稱快照，避免主檔改名影響歷史 |
 | `type_code` | `integer` | 必填 | 1 應發、2 扣款 |
 | `source_type_code` | `integer` | 必填 | 1 員工薪資設定、2 系統計算、3 臨時新增、4 人工調整 |
+| `amount` | `decimal` | 必填 | 當期實際金額 |
+| `description` | `string` | 選填 | 明細說明／人工調整原因 |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 修改時間 |
+
+**關聯與約束：** `payroll_id → payrolls.id`。臨時項目可不建永久 `salary_items`，但必須保留 `item_name`、來源、金額與原因；不修改 `employee_salary_settings`。薪資核准／結算後明細不可直接改寫。
 
 ### `employee_salary_bank_accounts`
 
@@ -341,10 +359,8 @@
 
 ## 人事成本
 
+人事成本與員工實領薪資分離：Payroll 回答員工實際領多少，人事成本則保存公司為員工承擔的薪資、保險、勞退、福利與其他成本。
 
-| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
-|---|---|---|---|
-| — | — | — | 原對話已確認此資料表／資料責任，但此輪未能可靠恢復逐欄最終版本；不自行猜欄位。 |
 ### `personnel_cost_items`
 
 **資料表註釋：** `personnel_cost_items` 的已確認資料責任；詳細規則依本節說明。
