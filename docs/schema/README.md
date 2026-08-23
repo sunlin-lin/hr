@@ -52,6 +52,7 @@
 - [15-ui-my-overtime.md](15-ui-my-overtime.md) — 我的資料／加班申請、完整打卡前提與撤回
 - [16-ui-my-payroll.md](16-ui-my-payroll.md) — 我的資料／已結算薪資單、顯示與出勤快照
 - [17-ui-attendance-correction-approval.md](17-ui-attendance-correction-approval.md) — 簽核／補打卡簽核、撤銷審核與分頁
+- [18-ui-overtime-approval.md](18-ui-overtime-approval.md) — 簽核／加班簽核、整筆核准與撤銷結果
 
 ## 全域規則
 
