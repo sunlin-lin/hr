@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 1,
+  "sourceThreadId": "6a89917d-91f0-83ee-a354-041a51c21a9f",
+  "sourceThreadTitle": "整理人資系統需求",
+  "timezone": "Asia/Taipei",
+  "date": "2026-08-22",
+  "turns": [
+    {
+      "id": "298279d1-806d-485c-bb5a-18b0b520b2e6",
+      "status": "completed",
+      "error": null,
+      "startedAt": 1787409587.977,
+      "completedAt": 1787409595.529691,
+      "durationMs": null,
+      "items": [
+        {
+          "type": "userMessage",
+          "id": "298279d1-806d-485c-bb5a-18b0b520b2e6",
+          "content": [
+            {
+              "type": "text",
+              "text": "還有問題嗎"
+            }
+          ]
+        },
+        {
+          "type": "agentMessage",
+          "id": "dd774f65-7b5b-496d-b1a1-3db7cdb60fa3",
+          "text": "我再做一次「最終壓力測試」。目前**沒有需要推翻的問題**，但還有 **4 個邊界規則**值得現在確認。這些不是 Schema 大改，而是避免實作時出現歧義。\n\n### 1. 生效期間內，員工離職怎麼處理？\n\n例如：\n\n```text\n贈與：8 小時\n有效期：9/1 ～ 12/31\n\n員工：10/15 離職\n剩餘：4 小時\n```\n\n我建議：\n\n> **離職後立即不可使用，但額度與歷史保留。**\n\n是否要把「剩餘額度是否折算薪資」交給之後的**離職結算制度**處理，而不是公司贈與這裡決定。\n\n---\n\n### 2. 員工在生效日前離職\n\n例如：\n\n```text\n核發：8/22\n有效：9/1 ～ 12/31\n員工：8/25 離職\n```\n\n這筆贈與：\n\n```text\n不能使用\n```\n\n但仍然：\n\n```text\n保留歷史\n```\n\n我建議不要自動產生任何薪資。\n\n---\n\n### 3. 同一批次可以混不同假別嗎？\n\n例如同一批：\n\n```text\n2026 年福利\n```\n\n裡面：\n\n```text\n員工 A → 特休 8h\n員工 B → 福利假 8h\n員工 C → 補休 4h\n```\n\n技術上可以，但我**不建議**。\n\n我比較建議：\n\n> **一個贈與批次只對應一種假別、薪資類型、額度及有效期間。**\n\n例如：\n\n```text\n批次 A\n2026 生日特休\n特休 / 有薪 / 8h / 9~12月\n\n批次 B\n2026 專案福利假\n福利假 / 有薪 / 8h / 9~12月\n```\n\n這樣批次的意義非常清楚。\n\n---\n\n### 4. 批次核發是否要「全部成功」？\n\n假設一次贈與 1,000 人：\n\n```text\nA  → 成功\nB  → 成功\nC  → 失敗\nD  → 成功\n```\n\n我建議：\n\n> **採逐員工獨立核發，不因一個員工失敗而全部 rollback。**\n\n系統最後可以顯示：\n\n```text\n成功：998\n失敗：2\n```\n\n失敗的人可以重新核發，不需要整批重做。\n\n---\n\n## 我認為這 4 個定完，就真的很完整了\n\n尤其第 **3 點「一批只能一種假別」**，我非常建議採用。\n\n因為我們現在的概念其實很漂亮：\n\n```text\n贈與批次\n    ↓\n「這次公司要發什麼」\n    ↓\n員工贈與明細\n    ↓\n「這個員工實際拿到什麼」\n```\n\n這會讓後面的 HR 操作、報表、稽核都簡單很多。"
+        }
+      ]
+    },
+    {
+      "id": "5404bc1b-181d-463d-a5a1-7fa092c97f50",
+      "status": "completed",
+      "error": null,
+      "startedAt": 1787409650.955,
+      "completedAt": 1787409658.552407,
+      "durationMs": null,
+      "items": [
+        {
+          "type": "userMessage",
+          "id": "5404bc1b-181d-463d-a5a1-7fa092c97f50",
+          "content": [
+            {
+              "type": "text",
+              "text": "1.離職後立即不可使用，但額度與歷史保留。  \n2.不能使用 ，保留歷史\n3.不行混用\n4.失敗的人可以重新核發，不需要整批重做。"
+            }
+          ]
+        },
+        {
+          "type": "agentMessage",
+          "id": "ca3aab8b-329a-4d7a-855d-751a2791140c",
+          "text": "好，這 4 點正式確定。到這裡我認為**公司贈與制度已經可以封版**，後面請假 Schema 直接引用，不再反覆改這一塊。\n\n## 最終規則\n\n### 1. 離職後\n\n```text\n員工離職\n    ↓\n公司贈與額度立即不可使用\n    ↓\n額度與完整歷史保留\n```\n\n不在公司贈與模組內自動折算薪資，離職結算另處理。\n\n---\n\n### 2. 生效日前離職\n\n例如：\n\n```text\n核發：08/22\n有效：09/01～12/31\n離職：08/25\n```\n\n結果：\n\n```text\n不可使用\n保留完整歷史\n不自動產生薪資\n```\n\n---\n\n### 3. 一個贈與批次不得混用\n\n一個 `company_leave_grant_batch` 只能有：\n\n```text\n一種假別\n一種薪資類型\n一種額度\n一組有效期間\n```\n\n例如：\n\n```text\n2026 生日特休\n────────────────\n假別：特休\n薪資：有薪\n額度：8 小時\n開始：2026/09/01\n結束：2026/12/31\n```\n\n如果還要送福利假：\n\n```text\n另一個批次\n```\n\n---\n\n### 4. 批次核發失敗\n\n採**逐員工獨立處理**：\n\n```text\n批次\n├─ A → 成功\n├─ B → 成功\n├─ C → 失敗\n├─ D → 成功\n└─ E → 成功\n```\n\n不會因 C 失敗而整批 rollback。\n\nC 可以之後：\n\n```text\n重新核發\n```\n\n不需要重新建立整個批次。\n\n---\n\n# 現在公司贈與的核心模型\n\n```text\ncompany_leave_grant_batches\n        │\n        │ 1 : N\n        ▼\ncompany_leave_grants\n        │\n        ├── employee_id\n        ├── leave_type_id\n        ├── pay_type_code\n        ├── granted_minutes\n        ├── effective_from\n        ├── effective_to\n        ├── status_code\n        ├── granted_by\n        └── granted_at\n```\n\n並且有幾個**不可違反的資料規則**：\n\n```text\ngranted_minutes > 0\n\neffective_from 必填\neffective_to   必填\n\neffective_to >= effective_from\n\n核發後：\neffective_from 不可修改\neffective_to   不可修改\ngranted_minutes 不可修改\n\n到期：\n不可使用\n但不刪除\n\n離職：\n不可使用\n但不刪除\n\n已使用：\n歷史保留\n```\n\n另外：\n\n```text\npay_type_code\n1 = 有薪\n2 = 無薪\n```\n\n假別則完全分開：\n\n```text\n特休 ≠ 福利假 ≠ 補休\n```\n\n這套規則現在已經足夠穩定，可以往下一層的**請假申請、審核、額度扣除與撤銷**整合了。"
+        }
+      ]
+    },
+    {
+      "id": "e72bc4fb-6b12-41f5-baf2-678414d7cf66",
+      "status": "completed",
+      "error": null,
+      "startedAt": 1787409667.298,
+      "completedAt": 1787409674.75508,
+      "durationMs": null,
+      "items": [
+        {
+          "type": "userMessage",
+          "id": "e72bc4fb-6b12-41f5-baf2-678414d7cf66",
+          "content": [
+            {
+              "type": "text",
+              "text": "總結這一輪"
+            }
+          ]
+        },
+        {
+          "type": "agentMessage",
+          "id": "439404a4-78f6-4664-b9f8-84d7ebaa1c4e",
+          "text": "可以。這一輪我們主要把 **「請假制度中的公司贈與」** 完整定義下來，並把前面討論過的規則收斂成可以直接進 Schema 的規格。\n\n# 本輪總結：公司贈與假別制度\n\n## 一、核心概念\n\n公司可以直接贈與員工假別額度。\n\n**不是員工申請，也不是員工彼此轉贈。**\n\n```text\n有權限的人員\n    ↓\n建立公司贈與批次\n    ↓\n指定員工\n    ↓\n直接核發\n    ↓\n產生員工的假別額度\n```\n\n---\n\n# 二、贈與批次\n\n建立：\n\n```text\ncompany_leave_grant_batches\n```\n\n一個批次代表一次公司的贈與活動。\n\n例如：\n\n```text\n2026 生日特休\n```\n\n一個批次：\n\n- **不能混用不同假別**\n- **不能混用不同薪資類型**\n- 可以指定多名員工\n- 個別員工核發失敗，不影響其他員工\n- 失敗員工可以之後重新核發\n\n例如：\n\n```text\n批次 A\n────────────────\n假別：特休\n薪資：有薪\n額度：8 小時\n開始：2026/09/01\n結束：2026/12/31\n\n    ↓\n\n員工 A → 成功\n員工 B → 成功\n員工 C → 失敗\n員工 D → 成功\n```\n\nC 可以單獨重新核發。\n\n---\n\n# 三、實際贈與紀錄\n\n建立：\n\n```text\ncompany_leave_grants\n```\n\n每一位員工都有自己的贈與紀錄。\n\n主要資訊：\n\n```text\nemployee_id\nbatch_id\nleave_type_id\npay_type_code\ngranted_minutes\neffective_from\neffective_to\nstatus_code\ngranted_by\ngranted_at\n```\n\n---\n\n# 四、假別\n\n這一點已經明確：\n\n```text\n特休 ≠ 福利假 ≠ 補休\n```\n\n也就是：\n\n- 公司贈與特休 → **就是特休**\n- 公司贈與福利假 → **就是福利假**\n- 公司贈與補休 → **就是補休**\n\n不把福利假併進特休。\n\n而特休、補休會進入各自的額度系統。\n\n---\n\n# 五、有薪／無薪\n\n公司贈與一定要記錄：\n\n```text\npay_type_code\n```\n\n只有兩種：\n\n```text\n1 = 有薪\n2 = 無薪\n```\n\n而且這個值是在**核發時決定**。\n\n後續產生實際額度時保留 Snapshot。\n\n請假申請本身不再重複存一份 `pay_type_code`，避免資料不一致。\n\n---\n\n# 六、開始日與結束日\n\n公司贈與必須指定：\n\n```text\neffective_from\neffective_to\n```\n\n**兩個都必填。**\n\n而且：\n\n```text\neffective_to >= effective_from\n```\n\n例如：\n\n```text\n核發時間：2026/08/22\n\n可使用期間：\n2026/09/01 ～ 2026/12/31\n```\n\n因此：\n\n> **核發時間 ≠ 生效時間**\n\n可以提前核發，但尚未到生效日之前不能使用。\n\n---\n\n# 七、核發後不能修改\n\n核發完成後：\n\n```text\ngranted_minutes\neffective_from\neffective_to\n```\n\n都不能直接修改。\n\n例如：\n\n```text\n原本：\n8 小時\n09/01～12/31\n```\n\n不能直接 UPDATE 成：\n\n```text\n4 小時\n09/01～10/31\n```\n\n需要透過既定的撤銷／調整機制處理，原始歷史必須保留。\n\n---\n\n# 八、撤銷\n\n### 尚未生效\n\n可以撤銷。\n\n例如：\n\n```text\n8/22 核發\n9/1 生效\n8/25 發現錯誤\n```\n\n可以撤銷。\n\n### 已經使用\n\n已使用的部分不能被原始撤銷動作抹掉。\n\n原始贈與紀錄仍然保留，已使用歷史也保留。\n\n---\n\n# 九、到期\n\n到：\n\n```text\neffective_to\n```\n\n之後：\n\n```text\n額度仍存在\n        ↓\n自動判定不可使用\n        ↓\n不刪除\n        ↓\n歷史保留\n```\n\n不把原始額度直接改成 `0`。\n\n因此未來仍然能查：\n\n```text\n公司贈與多少\n已使用多少\n剩餘多少\n何時到期\n```\n\n---\n\n# 十、員工離職\n\n員工離職後：\n\n```text\n公司贈與額度\n        ↓\n立即不可使用\n```\n\n但：\n\n```text\n贈與紀錄保留\n額度保留\n使用紀錄保留\n歷史保留\n```\n\n離職後剩餘額度是否需要進行薪資結算，交給之後的**離職結算制度**處理。\n\n---\n\n# 十一、生效日前離職\n\n例如：\n\n```text\n核發：08/22\n生效：09/01\n離職：08/25\n```\n\n結果：\n\n```text\n不能使用\n保留歷史\n不自動產生薪資\n```\n\n---\n\n# 十二、額度不可使用負數\n\n公司贈與：\n\n```text\ngranted_minutes > 0\n```\n\n不能拿：\n\n```text\n-8 小時\n```\n\n表示扣除。\n\n如果需要調整額度，使用額度調整／交易機制，而不是修改原始贈與紀錄。\n\n---\n\n# 十三、批次與員工的關係\n\n```text\ncompany_leave_grant_batches\n        │\n        │ 1:N\n        ▼\ncompany_leave_grants\n        │\n        │ N:1\n        ▼\nemployees\n```\n\n所以：\n\n> 一個批次可以贈與很多員工，但每個員工仍然有自己的贈與紀錄。\n\n這讓我們可以追蹤：\n\n```text\n這次活動送了誰？\n某個員工收到哪些公司贈與？\n某個批次有哪些成功／失敗？\n```\n\n---\n\n# 十四、公司贈與與實際額度\n\n最終資料流：\n\n```text\n公司贈與批次\n        ↓\ncompany_leave_grant_batches\n        ↓\ncompany_leave_grants\n        ↓\n實際額度\n        │\n        ├── 特休 → leave_entitlements\n        │\n        └── 補休 → compensatory_leave_credits\n```\n\n補休還要保留：\n\n```text\nsource_type_code\n```\n\n區分例如：\n\n```text\n加班產生\n公司贈與\n人工調整\n```\n\n---\n\n# 十五、整體設計原則\n\n這一輪其實確定了一個很重要的架構：\n\n> **原始事實、額度、使用紀錄、薪資結算分開。**\n\n也就是：\n\n```text\n公司「送了多少」\n        ↓\ncompany_leave_grants\n\n員工「實際擁有多少額度」\n        ↓\nleave_entitlements / compensatory_leave_credits\n\n員工「用了哪一批」\n        ↓\nleave_request_allocations\n\n薪資「最後怎麼算」\n        ↓\nPayroll Settlement Snapshot\n```\n\n因此即使未來：\n\n- 公司規則修改\n- 員工調薪\n- 假別規則修改\n- 員工離職\n- 額度到期\n- 贈與撤銷\n- 請假撤銷\n\n都不會破壞過去的歷史資料。\n\n---\n\n## 本輪目前已定案的 Schema\n\n```text\ncompany_leave_grant_batches\n        │\n        └── company_leave_grants\n                    │\n                    ├── employees\n                    └── leave_types\n                             │\n                    ┌────────┴────────┐\n                    ▼                 ▼\n          leave_entitlements   compensatory_leave_credits\n```\n\n**這一輪可以視為定案。**\n\n下一步就可以把這些規則正式整合進我們整個「請假制度」Schema，而不是再單獨討論公司贈與。"
+        }
+      ]
+    },
+    {
+      "id": "9c383544-5c8a-4f8b-a275-f3dc5fa16592",
+      "status": "completed",
+      "error": null,
+      "startedAt": 1787409690.399,
+      "completedAt": 1787409698.668368,
+      "durationMs": null,
+      "items": [
+        {
+          "type": "userMessage",
+          "id": "9c383544-5c8a-4f8b-a275-f3dc5fa16592",
+          "content": [
+            {
+              "type": "text",
+              "text": "整合進我們整個「請假制度」Schema"
+            }
+          ]
+        },
+        {
+          "type": "agentMessage",
+          "id": "826d4b97-1c1b-45dd-b903-c00dcd26c03a",
+          "text": "可以。現在把我們前面已經確認的 **法定假別、公司贈與、補休、額度、請假申請、審核、撤銷、歷史** 全部整合成一套。\n\n我會刻意把「假別規則」、「員工擁有的額度」、「員工請假」、「額度實際扣除」分開，避免之後越做越亂。\n\n# 一、整體架構\n\n```text\nemployees\n    │\n    │\n    ├──────────────────────────────┐\n    │                              │\n    ▼                              ▼\nleave_types                 leave_type_rules\n    │                              │\n    │                              │\n    ├──────────────┐               │\n    │              │               │\n    ▼              ▼               ▼\n特休             福利假          法定/公司規則\n    │\n    │\n    ▼\nleave_entitlements\n    ▲\n    │\n    │ 公司贈與\n    │\ncompany_leave_grants\n    ▲\n    │\ncompany_leave_grant_batches\n\n\n加班\n  │\n  ▼\ncompensatory_leave_credits\n  ▲\n  │\n公司贈與補休\n\n\n員工請假\n    │\n    ▼\nleave_requests\n    │\n    ▼\nleave_request_details\n    │\n    ▼\nleave_request_allocations\n    │\n    ├── leave_entitlements\n    │\n    └── compensatory_leave_credits\n```\n\n---\n\n# 二、`leave_types`\n\n## 用途\n\n定義系統有哪些假別。\n\n這張是「**假別字典**」，不是員工目前有多少假。\n\n### Schema\n\n| 欄位 | 型態 | 必要 | 說明 |\n|---|---|---:|---|\n| `id` | bigint | ✅ | 假別 ID |\n| `code` | varchar(30) | ✅ | 假別代碼 |\n| `name` | varchar(50) | ✅ | 假別名稱 |\n| `category_code` | int | ✅ | 假別分類 |\n| `grantable_by_company` | boolean | ✅ | 是否允許公司贈與 |\n| `requires_entitlement` | boolean | ✅ | 是否需要額度 |\n| `is_active` | boolean | ✅ | 是否啟用 |\n| `sort_order` | int | ✅ | UI 顯示順序 |\n| `created_at` | datetime | ✅ | 建立時間 |\n| `updated_at` | datetime | ✅ | 更新時間 |\n\n### 例如\n\n```text\n1 = 特休\n2 = 事假\n3 = 病假\n4 = 婚假\n5 = 喪假\n6 = 公傷病假\n7 = 公假\n8 = 福利假\n9 = 補休\n...\n```\n\n**特休就是特休，福利假就是福利假，不合併。**\n\n---\n\n# 三、`leave_type_rules`\n\n## 用途\n\n保存假別的「規則」。\n\n例如：\n\n- 法定天數\n- 計算方式\n- 是否有薪\n- 是否依年資\n- 是否需要證明\n- 額度如何取得\n\n### Schema\n\n| 欄位 | 型態 | 必要 | 說明 |\n|---|---|---:|---|\n| `id` | bigint | ✅ | 規則 ID |\n| `leave_type_id` | bigint | ✅ | 假別 |\n| `rule_version` | int | ✅ | 規則版本 |\n| `effective_from` | date | ✅ | 規則生效日 |\n| `effective_to` | date | 選填 | 規則結束日 |\n| `pay_type_code` | int | ✅ | `1=有薪`、`2=無薪` |\n| `calculation_type_code` | int | ✅ | 額度計算方式 |\n| `requires_document` | boolean | ✅ | 是否需要證明 |\n| `rule_config` | json | 選填 | 特殊規則參數 |\n| `status_code` | int | ✅ | 狀態 |\n| `created_at` | datetime | ✅ | 建立 |\n| `updated_at` | datetime | ✅ | 更新 |\n\n### 設計重點\n\n這裡的：\n\n```text\npay_type_code\n```\n\n是**預設規則**。\n\n真正員工實際取得的額度，會把結果 Snapshot 到 `leave_entitlements`。\n\n---\n\n# 四、`leave_entitlements`\n\n## 用途\n\n這張是核心。\n\n它回答：\n\n> **「這個員工現在到底擁有哪些假額度？」**\n\n例如：\n\n```text\n員工 A\n2026 法定特休 80 小時\n公司贈與特休 8 小時\n```\n\n會是兩個 entitlement。\n\n### Schema\n\n| 欄位 | 型態 | 必要 | 說明 |\n|---|---|---:|---|\n| `id` | bigint | ✅ | 額度 ID |\n| `employee_id` | bigint | ✅ | 員工 |\n| `leave_type_id` | bigint | ✅ | 假別 |\n| `source_type_code` | int | ✅ | 額度來源 |\n| `source_id` | bigint | 選填 | 原始來源 ID |\n| `pay_type_code` | int | ✅ | `1=有薪`、`2=無薪` |\n| `entitled_minutes` | int | ✅ | 原始額度 |\n| `effective_from` | date | ✅ | 開始日 |\n| `effective_to` | date | ✅ | 結束日 |\n| `status_code` | int | ✅ | 額度狀態 |\n| `created_at` | datetime | ✅ | 建立 |\n| `updated_at` | datetime | ✅ | 更新 |\n\n### `source_type_code`\n\n例如：\n\n```text\n1 = 法定取得\n2 = 公司贈與\n3 = 遞延\n4 = 人工調整\n```\n\n---\n\n# 五、為什麼 `pay_type_code` 要放這裡？\n\n例如公司贈與：\n\n```text\ncompany_leave_grants\npay_type_code = 1\n```\n\n產生：\n\n```text\nleave_entitlements\npay_type_code = 1\n```\n\n這就是 Snapshot。\n\n即使未來公司把規則改成無薪：\n\n```text\n舊額度 = 有薪\n新額度 = 無薪\n```\n\n不會影響歷史。\n\n---\n\n# 六、`company_leave_grant_batches`\n\n## 用途\n\n代表公司「這一次」要發放什麼。\n\n例如：\n\n> 2026 年生日福利\n\n### Schema\n\n| 欄位 | 型態 | 必要 | 說明 |\n|---|---|---:|---|\n| `id` | bigint | ✅ | 批次 ID |\n| `batch_no` | varchar(30) | ✅ | 批次編號 |\n| `name` | varchar(100) | ✅ | 批次名稱 |\n| `leave_type_id` | bigint | ✅ | 本批次假別 |\n| `pay_type_code` | int | ✅ | `1=有薪`、`2=無薪` |\n| `granted_minutes` | int | ✅ | 每人贈與額度 |\n| `effective_from` | date | ✅ | 開始日 |\n| `effective_to` | date | ✅ | 結束日 |\n| `reason` | text | ✅ | 贈與原因 |\n| `created_by` | bigint | ✅ | 建立者 |\n| `created_at` | datetime | ✅ | 建立時間 |\n| `updated_at` | datetime | ✅ | 更新時間 |\n\n### 一個批次不能混：\n\n```text\n特休 + 福利假\n```\n\n也不能：\n\n```text\n有薪 + 無薪\n```\n\n---\n\n# 七、`company_leave_grants`\n\n## 用途\n\n記錄：\n\n> **這個批次實際贈與給哪一個員工。**\n\n### Schema\n\n| 欄位 | 型態 | 必要 | 說明 |\n|---|---|---:|---|\n| `id` | bigint | ✅ | 贈與 ID |\n| `batch_id` | bigint | ✅ | 贈與批次 |\n| `employee_id` | bigint | ✅ | 員工 |\n| `status_code` | int | ✅ | 贈與狀態 |\n| `granted_by` | bigint | ✅ | 核發者 |\n| `granted_at` | datetime | 選填 | 核發時間 |\n| `cancelled_by` | bigint | 選填 | 撤銷者 |\n| `cancelled_at` | datetime | 選填 | 撤銷時間 |\n| `cancel_reason` | text | 選填 | 撤銷原因 |\n| `created_at` | datetime | ✅ | 建立 |\n| `updated_at` | datetime | ✅ | 更新 |\n\n### 注意\n\n我們已經決定：\n\n`pay_type_code`、`granted_minutes`、`effective_from`、`effective_to` 已經在 Batch。\n\n因此同一批次不能混用。\n\n---\n\n# 八、批次核發流程\n\n```text\n建立批次\n    ↓\n指定員工\n    ↓\n逐員工產生 company_leave_grants\n    ↓\n核發成功\n    ↓\n產生 leave_entitlements\n```\n\n例如：\n\n```text\nBatch #2026-BIRTHDAY-001\n\n特休\n有薪\n8 小時\n09/01～12/31\n\n       ↓\n\nA → 成功\nB → 成功\nC → 失敗\nD → 成功\n```\n\nC 可以單獨重新核發。\n\n不需要整批 rollback。\n\n---\n\n# 九、`compensatory_leave_credits`\n\n## 用途\n\n補休不能完全跟一般假額度混在一起。\n\n因為補休有特殊來源：\n\n```text\n加班換補休\n公司贈與補休\n人工調整\n```\n\n### Schema\n\n| 欄位 | 型態 | 必要 | 說明 |\n|---|---|---:|---|\n| `id` | bigint | ✅ | 補休額度 ID |\n| `employee_id` | bigint | ✅ | 員工 |\n| `source_type_code` | int | ✅ | 補休來源 |\n| `source_id` | bigint | 選填 | 原始來源 |\n| `pay_type_code` | int | ✅ | `1=有薪`、`2=無薪` |\n| `credited_minutes` | int | ✅ | 原始補休時間 |\n| `effective_from` | date | ✅ | 開始日 |\n| `effective_to` | date | ✅ | 到期日 |\n| `status_code` | int | ✅ | 狀態 |\n| `created_at` | datetime | ✅ | 建立 |\n| `updated_at` | datetime | ✅ | 更新 |\n\n---\n\n# 十、補休來源\n\n```text\nsource_type_code\n\n1 = 加班產生\n2 = 公司贈與\n3 = 人工調整\n```\n\n例如：\n\n```text\n加班 → 4 小時補休\n```\n\n和：\n\n```text\n公司贈與 → 8 小時補休\n```\n\n是兩個不同的額度批次。\n\n---\n\n# 十一、`leave_requests`\n\n## 用途\n\n員工真正提出的「請假申請」。\n\n### Schema\n\n| 欄位 | 型態 | 必要 | 說明 |\n|---|---|---:|---|\n| `id` | bigint | ✅ | 請假單 ID |\n| `employee_id` | bigint | ✅ | 申請員工 |\n| `request_no` | varchar(30) | ✅ | 請假單號 |\n| `status_code` | int | ✅ | 申請狀態 |\n| `reason` | text | 選填 | 請假原因 |\n| `submitted_at` | datetime | 選填 | 送出時間 |\n| `approved_by` | bigint | 選填 | 核准者 |\n| `approved_at` | datetime | 選填 | 核准時間 |\n| `rejected_by` | bigint | 選填 | 拒絕者 |\n| `rejected_at` | datetime | 選填 | 拒絕時間 |\n| `rejected_reason` | text | 選填 | 拒絕原因 |\n| `cancelled_at` | datetime | 選填 | 撤銷時間 |\n| `cancelled_by` | bigint | 選填 | 撤銷者 |\n| `cancel_reason` | text | 選填 | 撤銷原因 |\n| `created_at` | datetime | ✅ | 建立 |\n| `updated_at` | datetime | ✅ | 更新 |\n\n---\n\n# 十二、`leave_request_details`\n\n## 用途\n\n請假單的實際日期／時間。\n\n因為一張請假單可能跨：\n\n```text\n9/10\n9/11\n9/12\n```\n\n所以不能把時間直接塞在 `leave_requests`。\n\n### Schema\n\n| 欄位 | 型態 | 必要 | 說明 |\n|---|---|---:|---|\n| `id` | bigint | ✅ | 明細 ID |\n| `leave_request_id` | bigint | ✅ | 請假單 |\n| `leave_type_id` | bigint | ✅ | 假別 |\n| `leave_date` | date | ✅ | 請假日期 |\n| `start_time` | time | 選填 | 開始時間 |\n| `end_time` | time | 選填 | 結束時間 |\n| `requested_minutes` | int | ✅ | 申請分鐘數 |\n| `reason` | text | 選填 | 該日原因 |\n| `created_at` | datetime | ✅ | 建立 |\n| `updated_at` | datetime | ✅ | 更新 |\n\n---\n\n# 十三、為什麼要拆 `details`\n\n因為我們之前已經決定：\n\n> 請假可以跨不同日期，而且實際扣除的額度可能不同。\n\n例如：\n\n```text\n9/10 特休 8h\n9/11 特休 8h\n9/12 福利假 4h\n```\n\n甚至同一天：\n\n```text\n特休 4h\n+\n補休 4h\n```\n\n所以不能讓：\n\n```text\nleave_request\n```\n\n直接代表所有額度。\n\n---\n\n# 十四、`leave_request_allocations`\n\n## 這張是整套系統非常重要的一張\n\n用途：\n\n> **記錄這次請假，實際用了哪一批額度。**\n\n### Schema\n\n| 欄位 | 型態 | 必要 | 說明 |\n|---|---|---:|---|\n| `id` | bigint | ✅ | Allocation ID |\n| `leave_request_detail_id` | bigint | ✅ | 請假明細 |\n| `entitlement_type_code` | int | ✅ | 額度來源類型 |\n| `entitlement_id` | bigint | ✅ | 實際額度 ID |\n| `allocated_minutes` | int | ✅ | 本次扣除時間 |\n| `created_at` | datetime | ✅ | 建立時間 |\n\n---\n\n## 例如\n\n員工有：\n\n```text\n特休 A\n剩 4h\n\n特休 B\n剩 8h\n```\n\n請假：\n\n```text\n8h\n```\n\n系統可能：\n\n```text\nleave_request_allocations\n\nA → 4h\nB → 4h\n```\n\n所以我們永遠知道：\n\n> 這 8 小時到底是從哪裡扣掉的。\n\n---\n\n# 十五、請假撤銷\n\n如果員工原本：\n\n```text\n請假 8h\n```\n\n已經扣掉：\n\n```text\n特休 A -8h\n```\n\n後來撤銷請假。\n\n**不能修改原始 entitlement 的 `entitled_minutes`。**\n\n而是產生額度回復／交易。\n\n這樣才能保留：\n\n```text\n原本多少\n↓\n使用多少\n↓\n撤銷多少\n```\n\n完整歷史。\n\n---\n\n# 十六、額度不要用「直接 UPDATE」當帳務\n\n這是整套 Schema 最重要的原則之一。\n\n不要：\n\n```text\nentitled_minutes = 80\nUPDATE\n→ 72\n```\n\n然後不知道為什麼少了 8。\n\n而是：\n\n```text\n原始額度\n    ↓\n使用交易\n    ↓\n撤銷交易\n    ↓\n調整交易\n```\n\n最後算出：\n\n```text\n可用額度\n```\n\n這樣才能做稽核。\n\n---\n\n# 十七、公司贈與的完整流程\n\n例如公司贈與：\n\n> 2026 生日特休 8 小時，有薪，9/1～12/31。\n\n```text\ncompany_leave_grant_batches\n        │\n        │\n        ▼\ncompany_leave_grants\n        │\n        ▼\nleave_entitlements\n        │\n        │\n        ▼\n員工 9/10 請假\n        │\n        ▼\nleave_requests\n        │\n        ▼\nleave_request_details\n        │\n        ▼\nleave_request_allocations\n        │\n        ▼\n扣除公司贈與的 8 小時\n        │\n        ▼\n薪資結算\n        │\n        ▼\nSnapshot：有薪\n```\n\n---\n\n# 十八、到期\n\n```text\n2026/12/31\n       ↓\n贈與額度到期\n       ↓\n2027/01/01\n       ↓\n不可使用\n       ↓\n歷史仍保留\n```\n\n不刪除。\n\n---\n\n# 十九、離職\n\n```text\n員工離職\n    ↓\n所有公司贈與額度不可再使用\n    ↓\n額度保留\n    ↓\n歷史保留\n    ↓\n離職結算另外處理\n```\n\n---\n\n# 二十、目前整套請假制度的核心 Schema\n\n```text\n┌─────────────────────┐\n│      leave_types    │\n│       假別定義       │\n└──────────┬──────────┘\n           │\n           ▼\n┌─────────────────────┐\n│  leave_type_rules   │\n│       假別規則       │\n└──────────┬──────────┘\n           │\n           │\n     ┌─────┴──────────────┐\n     │                    │\n     ▼                    ▼\n┌───────────────┐  ┌──────────────────────┐\n│leave_entitlements│ │compensatory_leave_ │\n│   一般假額度    │  │      credits       │\n└───────┬───────┘  │       補休額度       │\n        │          └──────────┬───────────┘\n        │                     │\n        ▲                     ▲\n        │                     │\n┌───────┴────────┐    ┌───────┴──────────┐\n│company_leave_  │    │ 加班 / 公司贈與  │\n│    grants      │    │   / 人工調整     │\n└───────▲────────┘    └──────────────────┘\n        │\n┌───────┴────────────┐\n│company_leave_grant │\n│      batches       │\n│      贈與批次       │\n└────────────────────┘\n\n\n員工\n │\n ▼\nleave_requests\n │\n ▼\nleave_request_details\n │\n ▼\nleave_request_allocations\n │\n ├──────────────► leave_entitlements\n │\n └──────────────► compensatory_leave_credits\n```\n\n## 目前這套設計的核心原則\n\n**1. 假別 ≠ 額度**\n\n**2. 額度 ≠ 請假**\n\n**3. 請假 ≠ 薪資**\n\n**4. 原始核發紀錄不能被事後修改**\n\n**5. 實際使用哪一批額度，要有 allocation 紀錄**\n\n**6. 公司贈與是直接核發，不經員工申請**\n\n**7. 特休、福利假、補休是不同假別**\n\n**8. 有薪／無薪只有 `1 / 2`**\n\n**9. 生效日與結束日都必須指定**\n\n**10. 到期、離職都只是「不可使用」，不刪歷史**\n\n這一版已經可以作為我們後續「**請假制度 Schema 的基礎版**」。下一步如果要真正落資料庫，我會再處理 **請假審核流程、多人審核、撤銷、補登、半日／小時／分鐘、跨日、班表與請假之間的判定**，這些會直接影響 `leave_request_details` 的最終結構。"
+        }
+      ]
+    },
+    {
+      "id": "8d8d71aa-febd-4e13-a77f-e2e06beb697e",
+      "status": "completed",
+      "error": null,
+      "startedAt": 1787409722.404,
+      "completedAt": 1787409734.602567,
+      "durationMs": null,
+      "items": [
+        {
+          "type": "userMessage",
+          "id": "8d8d71aa-febd-4e13-a77f-e2e06beb697e",
+          "content": [
+            {
+              "type": "text",
+              "text": "記錄起來"
+            }
+          ]
+        },
+        {
+          "type": "agentMessage",
+          "id": "404d5596-bcb9-4cb4-b09d-25ffdfda876a",
+          "text": "已記錄。這一版會作為後續**請假制度 Schema 與流程設計的基礎版本**。"
+        }
+      ]
+    },
+    {
+      "id": "fdbaa64e-0dbf-46cf-bbaf-daba0fd7d8a2",
+      "status": "completed",
+      "error": null,
+      "startedAt": 1787409745.721,
+      "completedAt": 1787409753.450616,
+      "durationMs": null,
+      "items": [
+        {
+          "type": "userMessage",
+          "id": "fdbaa64e-0dbf-46cf-bbaf-daba0fd7d8a2",
+          "content": [
+            {
+              "type": "text",
+              "text": "我們完成哪幾塊模組了"
+            }
+          ]
+        },
+        {
+          "type": "agentMessage",
+          "id": "60fc40c1-666b-4ef3-b080-3db008b72293",
+          "text": "目前我們已經完成、而且你有明確確認過的主要模組有 **5 大塊**：\n\n### 1. 人事／員工基本資料 ✅\n\n已確定：\n\n- `employees`\n- 職稱（Job Position）\n- 職務，可多個\n- 聘僱性質 `employment_type_code`\n- 到職／離職獨立記錄\n- 部門歷史異動\n- 員工可以有部門異動歷史\n- `employees.status` 拿掉\n- 不建立「任職編號／次數」\n- 薪資不放在人事基本資料模組\n\n---\n\n### 2. 薪資制度 ✅\n\n已完成薪資本身的設計方向：\n\n- 基本薪資\n- 薪資歷史\n- 薪資項目\n- 預設薪資項目\n- 發薪時可臨時增加項目\n- 薪資計算與實際發放分離\n- 薪資 Snapshot\n- 調薪不影響過去已核發資料\n\n**人事成本**另外獨立討論，不混進薪資本身。\n\n---\n\n### 3. 人事成本 ✅\n\n已確認：\n\n- 人事成本獨立於薪資制度\n- 成本可以從薪資、公司負擔等來源產生\n- 不直接把成本欄位塞進員工或薪資主表\n- 後續可做成本統計、部門成本等\n\n---\n\n### 4. 打卡／出勤制度 ✅\n\n我們已經確認的核心規則：\n\n- 上班打卡\n- 下班打卡\n- 上班打卡後才能打下班卡\n- 上、下班打卡都可以自行撤銷\n- 誤打可以撤銷\n- 忘記打卡可以申請補登\n- 上班、下班補登可以分開\n- GPS 可以記錄\n- GPS **不是強制**\n- 班表與實際打卡分離\n- 班表需要支援：\n  - 一般週休\n  - 做二休二\n  - 輪班\n  - 零工／彈性工作\n  - 假日上班\n  - 中途調班\n  - 員工請假\n- 「班表定義為假日上班」才具備申請加班的資格\n\n而且我們已經深入討論：\n\n> 班表不是單純「星期一～星期日」固定排班，而是需要支援週期型班表。\n\n---\n\n### 5. 請假制度 ✅\n\n這是目前最新、也是最完整的一塊。\n\n核心 Schema 已經確定：\n\n```text\nleave_types\nleave_type_rules\n\nleave_entitlements\n\ncompany_leave_grant_batches\ncompany_leave_grants\n\ncompensatory_leave_credits\n\nleave_requests\nleave_request_details\nleave_request_allocations\n```\n\n並且已經確定：\n\n- 法定假別\n- 特休\n- 福利假\n- 補休\n- 公司贈與特休\n- 公司贈與福利假\n- 公司贈與補休\n- 有薪／無薪\n- `pay_type_code`\n  - `1 = 有薪`\n  - `2 = 無薪`\n- 公司贈與可以指定開始／結束日\n- 公司贈與直接核發\n- 公司贈與批次不能混假別\n- 公司贈與批次不能混薪資類型\n- 可以指定員工\n- 核發失敗可單獨重發\n- 到期不可使用但保留歷史\n- 離職後不可使用但保留歷史\n- 已使用額度不能被撤銷抹掉\n- 原始額度不能直接修改\n- 請假實際扣哪一筆額度由 `leave_request_allocations` 記錄\n\n---\n\n## 目前進度可以看成\n\n```text\n┌──────────────────────┐\n│ ① 人事基本資料       │ ✅ 完成\n├──────────────────────┤\n│ ② 薪資制度           │ ✅ 完成\n├──────────────────────┤\n│ ③ 人事成本           │ ✅ 完成\n├──────────────────────┤\n│ ④ 出勤／打卡／班表   │ ✅ 核心規則完成\n├──────────────────────┤\n│ ⑤ 請假制度           │ ✅ Schema 基礎完成\n└──────────────────────┘\n```\n\n### 還沒完全設計完的\n\n比較精確地說，**④ 出勤／班表**與**⑤ 請假**雖然核心架構已經定下來，但還有一些「流程層」尚未完整 Schema 化。\n\n例如：\n\n- 班表完整 Schema\n- 調班流程\n- 補登打卡審核\n- 加班申請\n- 加班核准\n- 加班換錢／換補休\n- 補休到期轉薪資\n- 請假審核流程\n- 多層主管審核\n- 請假撤銷\n- 跨日請假\n- 小時／分鐘請假\n- 請假與班表的衝突判定\n\n所以目前其實已經進入 **HR 系統核心資料模型逐模組定義** 的階段。"
+        }
+      ]
+    },
+    {
+      "id": "f2608708-1a71-46db-afc2-1acd5ac7f6c6",
+      "status": "completed",
+      "error": null,
+      "startedAt": 1787409818.266,
+      "completedAt": 1787409827.279682,
+      "durationMs": null,
+      "items": [
+        {
+          "type": "userMessage",
+          "id": "f2608708-1a71-46db-afc2-1acd5ac7f6c6",
+          "content": [
+            {
+              "type": "text",
+              "text": "部門有提到了?"
+            }
+          ]
+        },
+        {
+          "type": "agentMessage",
+          "id": "19c86800-4573-4e0f-bd1c-73de94795580",
+          "text": "有，而且**部門有討論過，但我剛才的總結漏寫了，這是我的疏漏。**\n\n我們之前確定的人事部分有包含：\n\n### 部門制度 ✅\n\n核心概念是：\n\n```text\ndepartments\ndepartment_histories\n```\n\n我們特別討論過：\n\n- 員工與部門的關係**需要歷史追蹤**\n- 因為員工可能轉部門\n- 不能只在 `employees` 放一個 `department_id`\n- 要知道員工**什麼時間在哪個部門**\n- 部門異動不能覆蓋過去資料\n- 部門歷史對人事管理很重要\n\n所以人事模組目前比較完整的結構應該是：\n\n```text\nemployees\n   │\n   ├── employee_employments\n   │       └── 到職／離職歷史\n   │\n   ├── employee_departments\n   │       └── 部門任職歷史\n   │\n   ├── employee_positions\n   │       └── 職務\n   │\n   ├── employee_job_position\n   │       └── 職稱\n   │\n   └── employment_type_code\n           └── 聘僱性質\n```\n\n另外我們也確認：\n\n> **員工不一定永遠只有一個部門。**\n\n這點要特別注意，所以不能把設計簡化成：\n\n```text\nemployees.department_id\n```\n\n而應該透過任職／部門關係紀錄處理。\n\n---\n\n### 因此目前模組應該修正成\n\n```text\n① 組織／人事 ✅\n   ├─ 員工\n   ├─ 部門\n   ├─ 部門歷史\n   ├─ 職稱\n   ├─ 職務\n   ├─ 聘僱性質\n   └─ 到離職歷史\n\n② 薪資制度 ✅\n\n③ 人事成本 ✅\n\n④ 出勤／班表 ✅ 核心\n\n⑤ 請假制度 ✅ 核心 Schema\n```\n\n所以你問得對，**部門不是還沒討論，而是已經包含在人事模組裡，而且部門歷史是我們當時特別認定重要的設計。**"
+        }
+      ]
+    },
+    {
+      "id": "24a2b80d-7d78-4053-b2cf-32b649c8a029",
+      "status": "completed",
+      "error": null,
+      "startedAt": 1787409864.613,
+      "completedAt": 1787409872.150609,
+      "durationMs": null,
+      "items": [
+        {
+          "type": "userMessage",
+          "id": "24a2b80d-7d78-4053-b2cf-32b649c8a029",
+          "content": [
+            {
+              "type": "text",
+              "text": "幫我把我們已經討論過的大大小小模組相依關西都列出來"
+            }
+          ]
+        },
+        {
+          "type": "agentMessage",
+          "id": "3a79e4da-0936-4b49-9d22-0f90a83951d7",
+          "text": "可以。這次我不只列「大模組」，而是把我們前面討論過的**大模組 → 子模組 → Schema → 相依關係**全部攤開。\n\n我會把「已經確定」和「只是提過、尚未完整定案」分開，避免把還沒決定的東西當成已完成。\n\n# 一、整個 HR 系統目前的總體架構\n\n```text\n                         ┌────────────────┐\n                         │    組織架構     │\n                         │ Departments    │\n                         │ 職稱 / 職務     │\n                         └───────┬────────┘\n                                 │\n                                 ▼\n┌─────────────────────────────────────────────────┐\n│                   人事 Employee                  │\n│                                                 │\n│ employees                                       │\n│ employee_employments                            │\n│ employee_departments                            │\n│ employee_positions                              │\n└───────┬──────────────────────┬──────────────────┘\n        │                      │\n        │                      │\n        ▼                      ▼\n┌───────────────┐      ┌─────────────────┐\n│   出勤 / 班表   │      │    薪資制度      │\n│ Schedules      │      │ Salary          │\n│ Attendance     │      │ Salary Items    │\n│ Overtime       │      │ Salary History  │\n└──────┬────────┘      └────────┬────────┘\n       │                        │\n       │                        ▼\n       │                ┌─────────────────┐\n       │                │    人事成本      │\n       │                │ Labor Cost      │\n       │                └─────────────────┘\n       │\n       ▼\n┌──────────────────────────────────────────┐\n│                  請假制度                 │\n│                                          │\n│ Leave Types                              │\n│ Leave Rules                              │\n│ Entitlements                             │\n│ Company Grants                           │\n│ Compensatory Leave                       │\n│ Leave Requests                           │\n└──────────────────────────────────────────┘\n       │\n       │\n       ▼\n┌──────────────────────────────────────────┐\n│              薪資結算 / Payroll           │\n│                                          │\n│ 出勤 → 加班 → 請假 → 薪資 → 人事成本       │\n└──────────────────────────────────────────┘\n```\n\n---\n\n# 二、① 組織架構\n\n這是整個 HR 的最上游。\n\n## 1. 部門 `departments`\n\n```text id=\"7b1fb4\"\ndepartments\n```\n\n管理：\n\n- 部門\n- 部門名稱\n- 部門代碼\n- 上層部門\n- 部門狀態\n\n### 被誰依賴？\n\n```text\ndepartments\n   ↓\nemployees / employee_departments\n   ↓\n班表\n   ↓\n薪資\n   ↓\n人事成本\n```\n\n---\n\n## 2. 部門歷史 `employee_departments`\n\n這是我們特別討論過的。\n\n```text id=\"i7e3d8\"\nemployee_departments\n```\n\n用途：\n\n> 記錄員工什麼期間屬於哪個部門。\n\n例如：\n\n```text id=\"x5f4qf\"\n員工 A\n\n2024～2025 → 業務部\n2026～      → 技術部\n```\n\n不能直接把：\n\n```text id=\"l5q5fp\"\nemployees.department_id\n```\n\n當成唯一資料。\n\n### 相依\n\n```text\nemployees\n    ↓\nemployee_departments\n    ↓\ndepartments\n```\n\n---\n\n# 三、② 職稱／職務\n\n這部分我們也特別修正過。\n\n## 3. Job Position「職稱」\n\n例如：\n\n```text id=\"6yd8bq\"\n軟體工程師\n後端工程師\n前端工程師\nHR\n會計\n店長\n副店長\n```\n\n職稱可以獨立建表。\n\n```text id=\"m1l7h4\"\njob_positions\n```\n\n---\n\n## 4. 職務\n\n職務和職稱不是同一件事情。\n\n一個員工可以：\n\n```text id=\"f8evgt\"\n職稱：軟體工程師\n\n職務：\n- 後端開發\n- 系統維護\n- DevOps\n```\n\n所以：\n\n```text id=\"v9s9sj\"\nemployee_positions\n```\n\n可以有多筆。\n\n### 相依\n\n```text\nemployees\n    │\n    ├── job_position\n    │\n    └── employee_positions\n```\n\n---\n\n# 四、③ 聘僱性質\n\n我們已經確定：\n\n```text id=\"9t5z1a\"\nemployment_type_code\n```\n\n必須存在。\n\n例如：\n\n```text id=\"s4svr3\"\n1 = 正職\n2 = 兼職\n3 = 約聘\n4 = 臨時\n5 = 工讀\n...\n```\n\n這和：\n\n```text id=\"wq5j4x\"\n職稱\n職務\n部門\n```\n\n是不同概念。\n\n---\n\n# 五、④ 到職／離職\n\n我們之前特別決定：\n\n> 到職跟離職不能只存在 employee 一張表。\n\n因為：\n\n```text id=\"v4xqkw\"\n員工\n↓\n離職\n↓\n重新回公司\n```\n\n所以需要任職歷史。\n\n```text id=\"h8ndt4\"\nemployee_employments\n```\n\n例如：\n\n```text id=\"j8e6io\"\n員工 A\n\n2020/01/01 ～ 2024/06/30\n2025/02/01 ～ 至今\n```\n\n這就是為什麼我們拿掉：\n\n```text id=\"zj48ad\"\n任職編號 / 任職次數\n```\n\n而讓資料本身自然形成歷史。\n\n---\n\n# 六、⑤ 員工主檔\n\n```text id=\"8t4jpn\"\nemployees\n```\n\n它只放：\n\n> 員工本身的身份／基本資料。\n\n我們已經確認：\n\n```text id=\"s8j1ol\"\nemployees.status\n```\n\n**拿掉。**\n\n員工目前是否在職，應該由任職歷史推導，而不是再維護一份可能不一致的 status。\n\n---\n\n# 七、人事模組完整依賴\n\n```text id=\"z3x6qx\"\ndepartments\n    │\n    ▼\nemployee_departments\n\njob_positions\n    │\n    ▼\nemployee_positions\n\nemployment_types\n    │\n    ▼\nemployees\n    │\n    ▼\nemployee_employments\n```\n\n所以這一層是整個系統的「基礎資料層」。\n\n---\n\n# 八、⑥ 班表／排班\n\n這是出勤的上游。\n\n我們已經討論到班表必須支援：\n\n- 一般週休\n- 輪班\n- 做二休二\n- 零工\n- 不固定班\n- 假日上班\n- 調班\n- 員工請假\n\n核心概念不能只是：\n\n```text id=\"xczv6w\"\nMonday = 上班\nTuesday = 上班\n```\n\n因為：\n\n> 一週永遠只有 7 天，但「做二休二」是週期，不是星期制度。\n\n因此我們討論的方向是：\n\n```text id=\"7r7w8t\"\nschedule_templates\n        ↓\nschedule_periods / roster\n        ↓\nemployee_schedules\n```\n\n---\n\n# 九、班表與員工\n\n```text\nemployees\n    ↓\nemployee_schedules\n```\n\n`employee_schedules` 是：\n\n> 某一個員工在某一天實際被排什麼班。\n\n而不是永久規則。\n\n例如：\n\n```text id=\"b8s3ye\"\n2026/09/01\n員工 A\n09:00～18:00\n```\n\n---\n\n# 十、調班\n\n我們也討論過：\n\n> 班已經排好了，中途調班怎麼辦？\n\n所以：\n\n```text id=\"a9p3sv\"\n原班表\n    ↓\n調班\n    ↓\n新實際班表\n```\n\n必須保留歷史。\n\n不能直接把過去的排班改掉而完全沒有紀錄。\n\n---\n\n# 十一、⑦ 出勤／打卡\n\n核心：\n\n```text id=\"v1e3cz\"\nattendance_records\n```\n\n至少要支援：\n\n```text id=\"xq0u6w\"\n上班打卡\n下班打卡\n```\n\n規則：\n\n```text id=\"n7j6l2\"\n上班打卡\n   ↓\n才能下班打卡\n```\n\n---\n\n# 十二、打卡撤銷\n\n我們已經確定：\n\n> 上班、下班打卡都可以撤銷。\n\n所以不能把打卡紀錄直接 DELETE。\n\n應該：\n\n```text id=\"c2mx7r\"\nattendance_record\n      ↓\ncancelled\n      ↓\n保留原始紀錄\n```\n\n---\n\n# 十三、補登打卡\n\n忘記打卡：\n\n```text id=\"r2x3nn\"\n補登申請\n```\n\n而且我們特別決定：\n\n> 上班補登、下班補登可以分開。\n\n例如：\n\n```text id=\"3w5zaf\"\n忘記上班打卡\n→ 補登上班\n\n忘記下班打卡\n→ 補登下班\n```\n\n不是一定要一次補完整天。\n\n---\n\n# 十四、GPS\n\n打卡可以：\n\n```text id=\"4dy2kk\"\nlatitude\nlongitude\n```\n\n但：\n\n> **GPS 非強制。**\n\n所以：\n\n```text id=\"u4l7c4\"\nGPS 有 → 記錄\nGPS 無 → 仍然可以打卡\n```\n\n---\n\n# 十五、⑧ 加班\n\n我們已經討論：\n\n> 只有班表定義「這天原本是休假／假日上班」的人，才具備申請加班的條件。\n\n所以：\n\n```text id=\"e4m9si\"\nemployee_schedule\n        ↓\n判定當日班別\n        ↓\n是否允許申請加班\n```\n\n而加班之後有兩種主要去向：\n\n```text id=\"5qqfco\"\n加班\n ├──→ 加班費\n │\n └──→ 補休\n```\n\n---\n\n# 十六、⑨ 補休\n\n補休是請假系統與加班系統的交界。\n\n來源可以是：\n\n```text id=\"y3s9tp\"\n加班\n公司贈與\n人工調整\n```\n\n產生：\n\n```text id=\"7fljwl\"\ncompensatory_leave_credits\n```\n\n而補休使用：\n\n```text id=\"9cgrs8\"\ncompensatory_leave_credits\n       ↓\nleave_request_allocations\n```\n\n---\n\n# 十七、補休特殊規則\n\n我們已經確定：\n\n> 加班不一定換錢，也可以換補休。\n\n而：\n\n> 補休到期沒有使用完，必須轉成薪資。\n\n另外我們特別討論過：\n\n> 補休核發當下要由核發者選擇「基準值」。\n\n而且：\n\n> **結算後不能異動。**\n\n所以未來薪資計算不能重新拿「現在的薪資」倒算以前的補休。\n\n必須使用：\n\n```text id=\"qdrbvn\"\n補休核發時的 Snapshot\n```\n\n---\n\n# 十八、⑩ 請假制度\n\n這是目前已經完成最多的模組之一。\n\n```text id=\"0m2yqf\"\nleave_types\nleave_type_rules\nleave_entitlements\ncompany_leave_grant_batches\ncompany_leave_grants\ncompensatory_leave_credits\nleave_requests\nleave_request_details\nleave_request_allocations\n```\n\n---\n\n# 十九、假別\n\n```text id=\"0q3kbc\"\nleave_types\n```\n\n包含：\n\n```text\n特休\n事假\n病假\n婚假\n喪假\n公假\n福利假\n補休\n...\n```\n\n其中：\n\n```text id=\"3q6u7y\"\n特休 ≠ 福利假 ≠ 補休\n```\n\n---\n\n# 二十、法定假別規則\n\n```text id=\"z3gtfy\"\nleave_type_rules\n```\n\n負責：\n\n- 法規規則\n- 年資\n- 額度\n- 有薪／無薪\n- 證明需求\n- 生效期間\n- Rule Version\n\n這讓未來勞基法修改時，可以新增版本，而不是改掉歷史。\n\n---\n\n# 二十一、員工假額度\n\n```text id=\"k4fhj2\"\nleave_entitlements\n```\n\n回答：\n\n> 這個員工現在有多少假？\n\n來源可以是：\n\n```text\n法定\n公司贈與\n遞延\n人工調整\n```\n\n---\n\n# 二十二、公司贈與\n\n```text id=\"1d2v2e\"\ncompany_leave_grant_batches\n        ↓\ncompany_leave_grants\n        ↓\nleave_entitlements\n```\n\n我們已經把這部分完整定案。\n\n包括：\n\n- 直接核發\n- 指定員工\n- 批次\n- 不混假別\n- 不混有薪／無薪\n- 開始日、結束日都必填\n- 核發後不可修改\n- 可撤銷\n- 已使用部分不能被抹掉\n- 到期不可使用\n- 離職不可使用\n- 歷史保留\n- 核發失敗可單獨重新核發\n\n---\n\n# 二十三、⑪ 請假申請\n\n```text id=\"1t4lcv\"\nleave_requests\n```\n\n負責：\n\n> 員工提出「我要請假」。\n\n但它不負責保存所有額度資訊。\n\n---\n\n# 二十四、請假明細\n\n```text id=\"t9t0g1\"\nleave_request_details\n```\n\n負責：\n\n> 哪一天、什麼時間、請什麼假、幾分鐘。\n\n所以可以支援：\n\n```text\n全天\n半天\n小時\n分鐘\n跨日\n```\n\n---\n\n# 二十五、額度分配\n\n```text id=\"82f4pz\"\nleave_request_allocations\n```\n\n這是非常重要的中間層。\n\n例如：\n\n```text\n請假 8 小時\n\n        ↓\n\n特休 A：4h\n公司贈與特休 B：4h\n```\n\n系統可以知道：\n\n> 這次請假究竟消耗了哪一筆額度。\n\n---\n\n# 二十六、⑫ 薪資\n\n薪資和人事基本資料分開。\n\n目前方向：\n\n```text id=\"u6y0bv\"\nsalary\nsalary_history\nsalary_items\nsalary_item_defaults\npayroll\npayroll_snapshots\n```\n\n而且：\n\n> 發薪時可以臨時增加發放項目。\n\n所以不是所有薪資項目都必須先建立成固定項目。\n\n---\n\n# 二十七、薪資與其他模組的關係\n\n薪資會吃很多上游資料：\n\n```text id=\"0b8m5k\"\n出勤\n   ↓\n加班\n   ↓\n加班費\n   ↓\n薪資\n\n請假\n   ↓\n有薪 / 無薪\n   ↓\n薪資\n\n補休到期\n   ↓\n應轉薪資\n   ↓\n薪資\n```\n\n---\n\n# 二十八、⑬ 人事成本\n\n人事成本不是薪資本身。\n\n大致：\n\n```text id=\"j8v6z1\"\n薪資\n +\n公司負擔\n +\n加班成本\n +\n其他人事成本\n        ↓\nLabor Cost\n```\n\n之後可以：\n\n```text\n員工\n↓\n部門\n↓\n月份\n↓\n人事成本\n```\n\n因此部門歷史會影響成本歸屬。\n\n---\n\n# 二十九、目前最大的「相依關係」\n\n如果把整套系統濃縮成一張：\n\n```text id=\"m6h0jw\"\n                    ┌─────────────┐\n                    │  部門 / 職稱 │\n                    │  職務 / 聘僱 │\n                    └──────┬──────┘\n                           │\n                           ▼\n                    ┌─────────────┐\n                    │   Employee  │\n                    │    人事      │\n                    └──────┬──────┘\n                           │\n          ┌────────────────┼─────────────────┐\n          │                │                 │\n          ▼                ▼                 ▼\n       班表             薪資             請假\n          │                ▲                 │\n          ▼                │                 ▼\n        打卡              │              假額度\n          │                │                 │\n          ▼                │                 │\n        加班 ───────────────┘                 │\n          │                                  │\n          ├────────→ 加班費                  │\n          │                                  │\n          └────────→ 補休 ──────────────────┘\n                           │\n                           ▼\n                     薪資結算\n                           │\n                           ▼\n                       人事成本\n```\n\n---\n\n# 三十、目前「已定案」與「尚未完整定案」\n\n### ✅ 已經有完整設計方向\n\n1. **組織／部門**\n2. **員工**\n3. **職稱**\n4. **職務**\n5. **聘僱性質**\n6. **到職／離職**\n7. **部門歷史**\n8. **薪資**\n9. **薪資項目**\n10. **人事成本**\n11. **班表核心架構**\n12. **打卡**\n13. **補登打卡**\n14. **GPS 打卡**\n15. **加班核心規則**\n16. **補休**\n17. **請假**\n18. **法定假別**\n19. **公司贈與假別**\n20. **假額度**\n21. **請假扣額度**\n22. **到期／離職額度處理**\n\n### 🟡 有討論，但還沒有做到最終 Schema\n\n這些我們下一階段還需要正式設計：\n\n```text\n調班完整流程\n排班週期模板\n加班申請 Schema\n加班審核\n加班費計算\n補休核發完整 Schema\n補休到期轉薪資\n打卡補登審核\n打卡異常\n請假審核流程\n多層審核\n請假撤銷\n跨日／跨班請假\n請假與班表衝突\n薪資正式 Payroll 計算\n離職結算\n```\n\n所以目前其實已經形成一個很清楚的架構：\n\n> **人事 → 班表 → 出勤 → 加班 → 補休／薪資 → 請假 → 薪資結算 → 人事成本**\n\n而且我們前面做的設計有一個共同原則：**歷史資料不覆蓋，透過有效期間、Snapshot、Allocation、Transaction 把「當時發生什麼」保存下來。**"
+        }
+      ]
+    },
+    {
+      "id": "0e2c5cec-6963-4510-b85e-d98bb163c0de",
+      "status": "completed",
+      "error": null,
+      "startedAt": 1787409910.77,
+      "completedAt": 1787409918.899191,
+      "durationMs": null,
+      "items": [
+        {
+          "type": "userMessage",
+          "id": "0e2c5cec-6963-4510-b85e-d98bb163c0de",
+          "content": [
+            {
+              "type": "text",
+              "text": "不用含資料表，只要\n項類似這樣呈現\n組織／人事 ✅    ├─ 員工    ├─ 部門    ├─ 部門歷史    ├─ 職稱    ├─ 職務    ├─ 聘僱性質"
+            }
+          ]
+        },
+        {
+          "type": "agentMessage",
+          "id": "2bbe47b0-2cb4-4b89-b6c8-4c862160ebf0",
+          "text": "可以，改成只看**模組與功能層級**，不放 Schema／資料表。\n\n目前我們已經討論過的完整範圍：\n\n```text\n組織／人事 ✅\n├─ 員工\n├─ 部門\n├─ 部門歷史\n├─ 職稱（Job Position）\n├─ 職務（可多個）\n├─ 聘僱性質\n├─ 到職／離職\n└─ 任職歷史\n\n\n薪資制度 ✅\n├─ 基本薪資\n├─ 薪資歷史\n├─ 薪資項目\n├─ 預設薪資項目\n├─ 發薪時臨時增加發放項目\n├─ 薪資核發\n├─ 薪資 Snapshot\n└─ 調薪後不影響歷史薪資\n\n\n人事成本 ✅\n├─ 員工人事成本\n├─ 部門人事成本\n├─ 薪資成本\n├─ 加班成本\n├─ 公司負擔成本\n└─ 人事成本統計\n\n\n班表／排班 🟡\n├─ 班別\n├─ 班表\n├─ 排班週期\n├─ 做二休二\n├─ 輪班\n├─ 零工／彈性排班\n├─ 假日班\n├─ 員工實際班表\n├─ 調班\n├─ 班表異動歷史\n└─ 班表與請假／加班判定\n\n\n出勤／打卡 🟡\n├─ 上班打卡\n├─ 下班打卡\n├─ 打卡撤銷\n├─ GPS 紀錄（非強制）\n├─ 忘打卡補登\n├─ 上班補登\n├─ 下班補登\n├─ 補登審核\n└─ 出勤異常\n\n\n加班 🟡\n├─ 加班申請\n├─ 加班資格判定\n├─ 假日加班\n├─ 加班審核\n├─ 加班費\n├─ 加班換補休\n├─ 加班歷史\n└─ 加班與班表關聯\n\n\n補休 🟡\n├─ 加班產生補休\n├─ 公司贈與補休\n├─ 人工調整\n├─ 補休額度\n├─ 補休使用\n├─ 補休核發\n├─ 核發時基準值\n├─ 補休到期\n├─ 到期轉薪資\n├─ 補休撤銷／調整\n└─ 補休歷史\n\n\n請假制度 ✅\n├─ 法定假別\n├─ 公司假別\n├─ 特休\n├─ 福利假\n├─ 補休\n├─ 假別規則\n├─ 假別額度\n├─ 公司贈與特休\n├─ 公司贈與福利假\n├─ 公司贈與補休\n├─ 有薪／無薪\n├─ 贈與開始日／結束日\n├─ 公司贈與批次\n├─ 個別員工核發\n├─ 到期不可使用\n├─ 離職不可使用\n├─ 額度歷史保留\n├─ 請假申請\n├─ 請假日期／時間\n├─ 額度扣除\n├─ 額度來源追蹤\n└─ 請假撤銷\n\n\n請假審核 🟡\n├─ 請假送出\n├─ 審核\n├─ 核准\n├─ 拒絕\n├─ 撤銷\n├─ 審核權限\n├─ 多層審核\n└─ 審核歷史\n\n\n薪資結算 🟡\n├─ 出勤資料\n├─ 請假資料\n├─ 加班資料\n├─ 補休資料\n├─ 薪資項目\n├─ 扣款\n├─ 加班費\n├─ 補休到期轉薪資\n├─ 薪資計算\n├─ 薪資核發\n└─ 結算後不可任意異動\n\n\n離職／結算 🟡\n├─ 離職申請\n├─ 離職生效\n├─ 未休假處理\n├─ 補休處理\n├─ 薪資結算\n├─ 人事成本結算\n└─ 歷史資料保留\n```\n\n### 目前狀態\n\n```text\n✅ = 核心規則／架構已經討論並確認\n🟡 = 已經討論方向，但細節還沒全部 Schema 化\n```\n\n如果只看我們**目前真正已經走過一輪的範圍**，可以濃縮成：\n\n```text\n組織／人事 ✅\n├─ 員工\n├─ 部門\n├─ 部門歷史\n├─ 職稱\n├─ 職務\n├─ 聘僱性質\n└─ 任職歷史\n\n薪資制度 ✅\n├─ 基本薪資\n├─ 薪資歷史\n├─ 薪資項目\n└─ 薪資核發\n\n人事成本 ✅\n├─ 員工成本\n├─ 部門成本\n└─ 人事成本統計\n\n班表／排班 🟡\n├─ 班別\n├─ 排班\n├─ 週期班\n├─ 輪班\n├─ 零工\n├─ 做二休二\n└─ 調班\n\n出勤／打卡 🟡\n├─ 上下班打卡\n├─ 打卡撤銷\n├─ GPS\n└─ 補登\n\n加班 🟡\n├─ 加班申請\n├─ 加班審核\n├─ 加班費\n└─ 加班換補休\n\n補休 🟡\n├─ 加班補休\n├─ 公司贈與\n├─ 額度\n├─ 到期轉薪資\n└─ 基準值\n\n請假制度 ✅\n├─ 法定假別\n├─ 特休\n├─ 福利假\n├─ 補休\n├─ 假別規則\n├─ 假額度\n├─ 公司贈與\n├─ 有薪／無薪\n├─ 請假申請\n├─ 額度扣除\n└─ 歷史追蹤\n\n薪資結算 🟡\n├─ 出勤\n├─ 請假\n├─ 加班\n├─ 補休\n└─ 薪資結算\n\n離職／結算 🟡\n├─ 離職\n├─ 未休假\n├─ 補休\n└─ 最終薪資結算\n```"
+        }
+      ]
+    },
+    {
+      "id": "33ef847b-1c94-4e86-b3df-db8a88b9f9e5",
+      "status": "completed",
+      "error": null,
+      "startedAt": 1787409967.915,
+      "completedAt": 1787409978.170634,
+      "durationMs": null,
+      "items": [
+        {
+          "type": "userMessage",
+          "id": "33ef847b-1c94-4e86-b3df-db8a88b9f9e5",
+          "content": [
+            {
+              "type": "text",
+              "text": "薪資結算的部分應該還缺少政府的計算規定"
+            }
+          ]
+        },
+        {
+          "type": "agentMessage",
+          "id": "608a3830-42f3-4f1c-964f-b67246933bb7",
+          "text": "對，你這個提醒是對的。**「薪資結算」目前確實少了一整層「政府／法規計算規則」**。\n\n而且我會建議不要把它簡化成「勞基法」，因為實際薪資結算會同時受到最低工資、加班費、勞健保、勞退、所得稅等規定影響。勞動部目前也明確要求薪資明細要能呈現各項工資、扣除項目及實際發給金額。citeturn0search0turn0search7\n\n所以我們的總體應該修正成：\n\n```text\n薪資結算 🟡\n├─ 政府／法規計算規定\n│  ├─ 最低工資\n│  ├─ 正常工時規定\n│  ├─ 加班費計算規定\n│  ├─ 休息日出勤計算\n│  ├─ 例假出勤計算\n│  ├─ 國定假日出勤計算\n│  ├─ 特別休假未休工資\n│  ├─ 平均工資計算\n│  ├─ 工資定義\n│  ├─ 工資扣除規定\n│  ├─ 勞保／就保相關計算\n│  ├─ 健保相關計算\n│  ├─ 勞退提繳\n│  ├─ 所得稅／扣繳\n│  └─ 法規版本／生效日期\n│\n├─ 員工薪資資料\n├─ 薪資項目\n├─ 出勤資料\n├─ 請假資料\n├─ 加班資料\n├─ 補休資料\n├─ 法定扣款\n├─ 公司代扣項目\n├─ 薪資計算\n├─ 薪資審核\n├─ 薪資核發\n├─ 薪資明細\n└─ 結算後 Snapshot\n```\n\n### 而且這裡有一個很重要的設計\n\n**政府規定不能直接寫死在程式碼裡。**\n\n例如目前最低工資自 2026 年起為月薪 29,500 元、時薪 196 元；加班費又有不同時數與日別的計算規則。citeturn0search2turn0search3\n\n所以我們後面應該設計成：\n\n```text\n政府計算規定\n      ↓\n規則版本\n      ↓\n生效日期\n      ↓\n薪資計算引擎\n      ↓\n員工當期薪資\n```\n\n例如：\n\n```text\n2026/01/01\n最低工資規則 V2026\n        ↓\n2026 年薪資計算\n\n2027/01/01\n最低工資規則 V2027\n        ↓\n2027 年薪資計算\n```\n\n這樣未來政府調整規定，**不能重新計算過去已結算的薪資**。\n\n這跟我們前面「補休核發時基準值固定、結算後不能異動」的設計理念是一致的。\n\n另外，勞動部的規定也顯示，加班費不是單純「底薪 ÷ 240」，而是要依平日、休息日、例假、國定假日等不同情況計算；而且「工資」的認定也會影響加班費的計算基礎。citeturn0search2turn0search6\n\n所以我會把這一塊提升成一個獨立的大子模組：\n\n```text\n薪資結算 🟡\n├─ 政府／法規規則 ⭐\n├─ 薪資計算\n├─ 法定扣款\n├─ 公司扣款\n├─ 加班費\n├─ 未休假工資\n├─ 勞保／就保\n├─ 健保\n├─ 勞退\n├─ 所得稅\n├─ 薪資明細\n├─ 薪資審核\n├─ 薪資核發\n└─ 歷史結算\n```\n\n**這個「政府／法規規則」我建議列為薪資模組的第一級核心，而不是附屬功能。**\n\n而且它之後還會反過來依賴我們前面做的**班表、打卡、請假、加班、補休、薪資項目**，所以這也代表我們現在的整體架構方向是正確的。"
+        }
+      ]
+    }
+  ]
+}
