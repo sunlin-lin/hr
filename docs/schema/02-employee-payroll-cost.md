@@ -26,11 +26,6 @@
 | `phone_encrypted` | `binary` | 必填性待確認 | 電話加密值 |
 | `email_encrypted` | `binary` | 必填性待確認 | Email 加密值 |
 | `address_encrypted` | `binary` | 必填性待確認 | 地址加密值 |
-| `company_name_snapshot` | `string` | 必填 | 結算當時的公司名稱；歷史薪資單顯示值 |
-| `employee_code_snapshot` | `string` | 必填 | 結算當時的員工編號 |
-| `employee_name_snapshot` | `string` | 必填 | 結算當時的員工姓名 |
-| `department_name_snapshot` | `string` | 條件必填 | 結算當時的部門名稱；無部門時可為 NULL |
-| `job_title_name_snapshot` | `string` | 選填 | 結算當時的職稱名稱 |
 | `created_at` | `datetime` | 必填 | 建立時間 |
 | `updated_at` | `datetime` | 必填 | 最後修改時間 |
 | `deleted_at` | `datetime` | 選填 | Soft Delete 時間 |
@@ -300,6 +295,11 @@
 | `approved_by` | `uuid` | 選填 | 核准人員 ID |
 | `approved_at` | `datetime` | 選填 | 核准時間 |
 | `paid_at` | `datetime` | 選填 | 實際發薪時間 |
+| `company_name_snapshot` | `string` | 必填 | 結算當時的公司名稱；歷史薪資單顯示值 |
+| `employee_code_snapshot` | `string` | 必填 | 結算當時的員工編號 |
+| `employee_name_snapshot` | `string` | 必填 | 結算當時的員工姓名 |
+| `department_name_snapshot` | `string` | 條件必填 | 結算當時的部門名稱；無部門時可為 NULL |
+| `job_title_name_snapshot` | `string` | 選填 | 結算當時的職稱名稱 |
 | `created_at` | `datetime` | 必填 | 建立時間 |
 | `updated_at` | `datetime` | 必填 | 修改時間 |
 
