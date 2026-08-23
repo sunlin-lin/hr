@@ -48,6 +48,7 @@
 - [11-ui-my-profile.md](11-ui-my-profile.md) — 我的資料／唯讀個資與變更密碼
 - [12-ui-my-attendance.md](12-ui-my-attendance.md) — 我的資料／本人按月出勤統計與列表
 - [13-ui-attendance-correction.md](13-ui-attendance-correction.md) — 我的資料／補打卡申請、撤回與審核
+- [14-ui-my-leave.md](14-ui-my-leave.md) — 我的資料／逐筆假期餘額與請假申請
 
 ## 全域規則
 
