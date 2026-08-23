@@ -90,15 +90,15 @@
 
 ### 帳號／公司成員與角色關聯
 
-目前已定案 Schema 只有：
+目前與帳號相關的確認狀態：
 
 ```text
-roles
-permissions
-role_permissions
+users              已確認採用；欄位待逐欄確認
+company_users      已確認採用；欄位待逐欄確認
+company_user_roles 尚未定案
 ```
 
-尚無法表示「哪個登入帳號擁有哪些角色」。後續必須建立公司成員／帳號與角色的關聯；暫稱 `company_user_roles`，正式表名與欄位須等帳號模型確認後定案，不得直接當成已確認 Schema。
+`users` 與 `company_users` 的表名、用途及責任邊界已由使用者確認，但目前仍無法表示「哪個公司成員擁有哪些角色」。角色關聯暫稱 `company_user_roles`，其正式表名與欄位仍須另外確認，不得因前兩表定案而連帶視為已確認 Schema。
 
 至少必須支援：
 
