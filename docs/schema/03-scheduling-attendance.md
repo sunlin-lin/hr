@@ -205,6 +205,9 @@
 | `work_date` | `date` | 必填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
 | `attendance_type_code` | `integer` | 必填 | 欄位已確認；代碼值或額外約束未在定案節點明定 |
 
+| `source_type_code` | `integer` | 必填 | 打卡來源類型，例如現場打卡或人工補登 |
+| `source_id` | `uuid` | 選填 | 人工補登時 FK → `attendance_correction_requests.id` |
+
 規則：有效上班卡後才能打下班卡；兩種卡均可撤銷；撤銷不 DELETE；GPS 選填。
 
 ### `attendance_correction_requests`
@@ -233,11 +236,27 @@
 - 已有有效打卡的類型不得重複申請；不可申請未來日期。
 - 已結算月份不得提出申請；存在待審核申請時應阻止月份結算。
 - 待審核申請可由員工撤回；撤回保留紀錄且不得再審核。
-- 未核准申請不提供複製後重新送出；未核准時 `review_comment` 必填。
+- 未核准申請不提供複製後重新送出；退回原因保存於審核歷程。
 - 核准後才建立正式 `attendance_records`，來源為人工補登，且不建立 GPS。
 - 核准後重新計算 `attendance_results`。
 - 撤回欄位名稱與型態尚待確認。
 - 詳細規劃見 [13-ui-attendance-correction.md](13-ui-attendance-correction.md)。
+
+### `attendance_correction_reviews`
+
+**註釋：** 補打卡申請的不可變審核與撤銷歷程。
+
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `uuid` | 必填 | PK |
+| `attendance_correction_request_id` | `uuid` | 必填 | FK → `attendance_correction_requests.id` |
+| `action_code` | `integer` | 必填 | 核准、退回、撤銷核准或撤銷退回 |
+| `action_by` | `uuid` | 必填 | 操作者 |
+| `action_at` | `datetime` | 必填 | 操作時間 |
+| `reason` | `text` | 條件必填 | 退回及撤銷審核結果時必填 |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+
+歷程只能新增，不可修改或刪除。薪資尚未開始核算時，已核准及已退回結果均可撤銷並回到待審核；薪資開始核算後只可查看。詳細流程見 [17-ui-attendance-correction-approval.md](17-ui-attendance-correction-approval.md)。
 
 ### `attendance_settings`
 
