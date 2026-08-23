@@ -18,8 +18,8 @@
 |---|---|---|---|
 | `id` | `bigint` | 必填 | 主鍵，資料唯一識別碼 |
 | `company_id` | `bigint/uuid` | 必填 | 所屬公司外鍵 |
-| `occupational_industry_code` | `varchar(30)` | 必填 | 依原對話之欄位用途；未新增額外規則 |
-| `insurance_unit_type_code` | `varchar(30)` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `occupational_industry_code` | `varchar(30)` | 必填 | 公司職業災害保險行業別代碼 |
+| `insurance_unit_type_code` | `varchar(30)` | 必填 | 投保單位類別代碼 |
 | `effective_from` | `date` | 必填 | 生效開始日 |
 | `effective_to` | `date` | 選填 | 生效結束日 |
 | `created_by` | `FK` | 必填 | 建立者外鍵 |
@@ -36,8 +36,18 @@
 | 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
 |---|---|---|---|
 | `id` | `bigint` | 必填 | 主鍵，資料唯一識別碼 |
-| `dataset_code` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
-| `version_code` | `varchar(30)` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `dataset_code` | `integer` | 必填 | 法規資料集代碼 |
+| `version_code` | `varchar(30)` | 必填 | 西元版本代碼，例如 `2026-01` |
+| `effective_from` | `date` | 必填 | 版本生效日 |
+| `effective_to` | `date` | 選填 | 版本失效日；可由下一版本推導 |
+| `government_resource_id` | `varchar(150)` | 選填 | 本次取得的政府資源識別碼，不視為永久固定 URL |
+| `source_modified_at` | `datetime` | 選填 | 政府來源標示的修改時間 |
+| `synced_at` | `datetime` | 必填 | 同步完成時間 |
+| `checksum` | `varchar(128)` | 必填 | 原始內容雜湊，用於判斷內容是否改變 |
+| `record_count` | `integer` | 選填 | 解析後筆數 |
+| `raw_format_code` | `integer` | 必填 | 原始資料格式代碼 |
+| `raw_data` | `LONGTEXT` | 必填 | 政府原始資料 Snapshot |
+| `created_at` | `datetime` | 必填 | 建立時間 |
 
 約束：`UNIQUE(dataset_code, version_code)`；`effective_from` 必填；不用 `is_current`。
 
@@ -51,15 +61,15 @@
 |---|---|---|---|
 | `id` | `bigint` | 必填 | 主鍵，資料唯一識別碼 |
 | `dataset_version_id` | `bigint` | 必填 | 政府法規版本外鍵 |
-| `record_key` | `varchar(150)` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `record_key` | `varchar(150)` | 必填 | 同一版本內穩定且唯一的資料鍵 |
 | `code` | `varchar(100)` | 選填 | 業務代碼 |
 | `name` | `varchar(250)` | 選填 | 顯示名稱 |
-| `range_from` | `decimal(18,4)` | 選填 | 依原對話之欄位用途；未新增額外規則 |
-| `range_to` | `decimal(18,4)` | 選填 | 依原對話之欄位用途；未新增額外規則 |
+| `range_from` | `decimal(18,4)` | 選填 | 級距下限 |
+| `range_to` | `decimal(18,4)` | 選填 | 級距上限 |
 | `amount` | `decimal(18,4)` | 選填 | 金額或計算基礎值 |
-| `rate` | `decimal(18,8)` | 選填 | 依原對話之欄位用途；未新增額外規則 |
-| `data` | `json` | 必填 | 依原對話之欄位用途；未新增額外規則 |
-| `sort_order` | `integer` | 選填 | 依原對話之欄位用途；未新增額外規則 |
+| `rate` | `decimal(18,8)` | 選填 | 費率／比率 |
+| `data` | `json` | 必填 | 無法由通用欄位承載的完整標準化內容 |
+| `sort_order` | `integer` | 選填 | 同版本顯示／運算順序 |
 | `created_at` | `datetime` | 必填 | 建立時間 |
 
 約束：`UNIQUE(dataset_version_id, record_key)`。所得稅特殊結構先放 `data`，暫不另拆表。
@@ -73,8 +83,16 @@
 | 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
 |---|---|---|---|
 | `id` | `bigint` | 必填 | 主鍵，資料唯一識別碼 |
-| `dataset_code` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
-| `trigger_type_code` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `dataset_code` | `integer` | 必填 | 本次同步的法規資料集代碼 |
+| `trigger_type_code` | `integer` | 必填 | 1 自動排程、2 人工觸發 |
+| `started_at` | `datetime` | 必填 | 同步開始時間 |
+| `finished_at` | `datetime` | 選填 | 同步結束時間 |
+| `status_code` | `integer` | 必填 | 1 執行中、2 更新成功、3 失敗、4 無異動 |
+| `dataset_version_id` | `bigint` | 選填 | 成功產生／辨識出的版本 FK |
+| `government_resource_id` | `varchar(150)` | 選填 | 本次實際使用的政府資源識別碼 |
+| `records_received` | `integer` | 選填 | 本次收到／解析筆數 |
+| `error_message` | `text` | 選填 | 失敗原因 |
+| `created_at` | `datetime` | 必填 | 建立時間 |
 
 同步失敗不得破壞既有有效版本。
 
@@ -107,6 +125,7 @@
 - 離職生效、未休假、補休與最終薪資結算。
 - 報表／統計、通知中心、員工自助入口及附件中心。
 - 法定計算公式的版本化實作細節。
+
 
 
 
