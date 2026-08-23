@@ -2,6 +2,8 @@
 
 ## 人事定案重點
 
+> 員工清單的操作規格見 [員工清單 UI 定案](../ui/20-employee-list.md)。本文件是相對應 Schema 的唯一正式放置位置，不在 UI 文件重複定義欄位。
+
 - `employees` 只代表公司內的人員主檔；不放在職狀態、到離職、部門、職稱、職務或薪資。
 - 離職回任建立新的 `employee_employments`。
 - 同時間僅一個部門；職務可同時多個；部門、職稱、職務皆留歷史。
@@ -17,20 +19,22 @@
 |---|---|---|---|
 | `id` | `uuid` | 必填 | 主鍵，資料唯一識別碼 |
 | `company_id` | `uuid` | 必填 | 所屬公司外鍵 |
-| `employee_code` | `string` | 必填 | 公司內員工編號 |
+| `employee_code` | `string` | 必填 | 公司內員工編號；可修改，修改前後須留稽核紀錄 |
 | `name` | `string` | 必填 | 顯示名稱 |
 | `gender` | `string` | 必填 | 性別代碼 |
-| `identity_number_encrypted` | `binary` | 必填性待確認 | 身分證加密值；原對話確認欄位，未明定 NULL 規則 |
-| `identity_number_hash` | `binary` | 必填性待確認 | 身分證查詢 Hash；原對話確認欄位，未明定 NULL 規則 |
-| `birthday_encrypted` | `binary` | 必填性待確認 | 出生年月日加密值 |
-| `phone_encrypted` | `binary` | 必填性待確認 | 電話加密值 |
-| `email_encrypted` | `binary` | 必填性待確認 | Email 加密值 |
-| `address_encrypted` | `binary` | 必填性待確認 | 地址加密值 |
+| `identity_number_encrypted` | `binary` | 必填 | 身分證加密值 |
+| `identity_number_hash` | `binary` | 必填 | 身分證查詢 Hash |
+| `birthday_encrypted` | `binary` | 必填 | 出生年月日加密值 |
+| `phone_encrypted` | `binary` | 必填 | 電話加密值 |
+| `email_encrypted` | `binary` | 選填 | Email 加密值 |
+| `address_encrypted` | `binary` | 必填 | 地址加密值 |
 | `created_at` | `datetime` | 必填 | 建立時間 |
 | `updated_at` | `datetime` | 必填 | 最後修改時間 |
 | `deleted_at` | `datetime` | 選填 | Soft Delete 時間 |
 
 **明確不含：** `status`、`hire_date`、`leave_date`。
+
+**本輪新增約束：** `UNIQUE(company_id, employee_code)`；員工編號允許修改，但不得與同公司其他員工重複，且修改前後值寫入系統稽核。
 
 ## 已確認的本人個資顯示
 
@@ -51,16 +55,17 @@
 | `id` | `uuid` | 必填 | 主鍵，資料唯一識別碼 |
 | `employee_id` | `uuid` | 必填 | 員工外鍵 |
 | `employment_type_code` | `integer` | 必填 | 僱用型態：1 正職、2 兼職、3 約聘、4 派遣、5 工讀、6 臨時、7 顧問、8 實習 |
-| `employment_nature_code` | `integer` | 必填性待確認 | 任職性質代碼；原對話確認存在，但未可靠重列代碼值 |
+| `employment_nature_code` | `integer` | 選填 | 任職性質代碼 |
 | `hire_date` | `date` | 必填 | 本次任職到職日 |
-| `leave_date` | `date` | 選填 | 本次任職離職日；在職為 NULL |
-| `leave_reason_code` | `integer` | 選填 | 離職原因代碼 |
+| `leave_date` | `date` | 選填 | 本次任職離職日；在職為 NULL；辦理離職時必填 |
+| `last_working_date` | `date` | 選填 | 最後工作日；辦理離職時必填 |
+| `leave_reason_code` | `integer` | 選填 | 離職原因代碼；辦理離職時必填 |
 | `status` | `string` | 必填 | 本次任職狀態；不用 DB ENUM |
 | `created_at` | `datetime` | 必填 | 建立時間 |
 | `updated_at` | `datetime` | 必填 | 修改時間 |
 | `deleted_at` | `datetime` | 選填 | Soft Delete 時間 |
 
-**關聯與約束：** FK `employee_id → employees.id`；同一員工同一時間最多一筆有效任職；離職回任新增資料，不修改舊任職；不建立 `employment_sequence`。
+**關聯與約束：** FK `employee_id → employees.id`；同一員工同一時間最多一筆有效任職；離職回任新增資料，不修改舊任職；不建立 `employment_sequence`。辦理離職時 `leave_date`、`last_working_date`、`leave_reason_code` 同時必填，且 `last_working_date ≤ leave_date`；完成後同步停用該員工的 `company_users`，但不刪除帳號與角色歷史。
 
 ## 人事歷史表
 
@@ -80,7 +85,7 @@
 | `created_at` | `datetime` | 必填 | 建立時間 |
 | `updated_at` | `datetime` | 必填 | 最後修改時間 |
 
-約束：同一任職在同一時間只能有一筆有效部門，期間不可重疊。
+約束：同一任職在同一時間只能有一筆有效部門，期間不可重疊。由修改 UI 建立的新部門異動必須指定未來 `effective_from`；生效前不改寫目前有效紀錄。
 
 ### `job_titles`
 
@@ -108,6 +113,8 @@
 | `effective_to` | `date` | 選填 | 生效結束日 |
 | `created_at` | `datetime` | 必填 | 建立時間 |
 | `updated_at` | `datetime` | 必填 | 最後修改時間 |
+
+約束：同一任職同一時間只能有一筆有效職稱；由修改 UI 建立的新職稱異動必須指定未來 `effective_from`。
 
 ### `job_positions`
 
@@ -143,6 +150,8 @@
 | `effective_to` | `date` | 選填 | 生效結束日 |
 | `created_at` | `datetime` | 必填 | 建立時間 |
 | `updated_at` | `datetime` | 必填 | 最後修改時間 |
+
+約束：同一任職可同時有多個有效職務，但同一職務期間不得重疊；由修改 UI 建立的新職務異動必須指定未來 `effective_from`。
 
 ## `employee_dependents`
 
@@ -180,9 +189,34 @@
 
 | 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
 |---|---|---|---|
-| `id` | `bigint/uuid` | 必填 | 主鍵，資料唯一識別碼 |
-| `employee_id` | `FK` | 必填 | 員工外鍵 |
-| `withholding_method_code` | `integer` | 必填 | 扣繳方式：1 薪資所得扣繳稅額表、2 固定 5% |
+| `id` | `uuid` | 必填 | PK |
+| `employee_id` | `uuid` | 必填 | FK → `employees.id` |
+| `withholding_method_code` | `integer` | 必填 | 1 薪資所得扣繳稅額表、2 固定 5% |
+| `effective_from` | `date` | 必填 | 生效開始日 |
+| `effective_to` | `date` | 選填 | 生效結束日 |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 修改時間 |
+
+約束：新增員工時扣繳方式必填；同一員工的有效期間不得重疊，修改時結束舊設定並新增一筆。
+
+## `employee_labor_pension_settings`
+
+**註釋：** 員工勞退自願提繳率及有效期間。
+
+**設計理由：** 自願提繳率與所得扣繳方式是不同法規概念，且會隨時間調整，因此獨立保存，不放入 `employees` 或 `employee_withholding_settings`。
+
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `uuid` | 必填 | PK |
+| `employee_id` | `uuid` | 必填 | FK → `employees.id` |
+| `voluntary_contribution_rate` | `decimal(5,4)` | 必填 | 自願提繳率，例如 6% 保存為 0.0600 |
+| `effective_from` | `date` | 必填 | 生效開始日 |
+| `effective_to` | `date` | 選填 | 生效結束日 |
+| `created_by` | `uuid` | 必填 | 設定者公司成員 ID |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 修改時間 |
+
+約束：同一員工的有效期間不得重疊；可選比例由有效法規資料限制，不使用 DB ENUM 寫死。
 
 ## 薪資核心
 
@@ -373,11 +407,13 @@
 | `account_name_encrypted` | `varbinary` | 必填 | 戶名加密值 |
 | `is_primary` | `boolean` | 必填 | 是否主要發薪帳戶 |
 | `status_code` | `integer` | 必填 | 帳戶狀態；後期定案採 code |
+| `effective_from` | `date` | 必填 | 帳戶生效開始日 |
+| `effective_to` | `date` | 選填 | 帳戶生效結束日 |
 | `created_at` | `datetime` | 必填 | 建立時間 |
 | `updated_at` | `datetime` | 必填 | 修改時間 |
 | `deleted_at` | `datetime` | 選填 | Soft Delete 時間 |
 
-**關聯與約束：** `employee_id → employees.id`；同一員工可有多個帳戶，但同時間只能有一個主要帳戶。帳號不得明文保存。
+**關聯與約束：** `employee_id → employees.id`；同一員工可有多個帳戶，但同時間只能有一個主要帳戶。帳號不得明文保存。修改薪轉銀行或帳號時結束舊紀錄並新增一筆，不覆蓋歷史。
 ### `payroll_payments`
 
 **註釋：** 實際薪資發放方式、時間、金額與結果。
