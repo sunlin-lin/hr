@@ -11,15 +11,34 @@
 
 **註釋：** 員工個人主檔。
 
-`id uuid PK`、`company_id uuid FK`、`employee_code string`、`name string`、`gender string`、`identity_number_encrypted binary`、`identity_number_hash binary`、`birthday_encrypted binary`、`phone_encrypted binary`、`email_encrypted binary`、`address_encrypted binary`、`created_at datetime`、`updated_at datetime`、`deleted_at datetime nullable`。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `uuid` | 必填 | 主鍵，資料唯一識別碼 |
+| `company_id` | `uuid` | 必填 | 所屬公司外鍵 |
+| `employee_code` | `string` | 必填 | 公司內員工編號 |
+| `name` | `string` | 必填 | 顯示名稱 |
+| `gender` | `string` | 必填 | 性別代碼 |
+| `identity_number_encrypted` | `binary` | 必填 | 身分證加密值 |
+| `identity_number_hash` | `binary` | 必填 | 身分證查詢 Hash |
+| `birthday_encrypted` | `binary` | 必填 | 出生年月日加密值 |
+| `phone_encrypted` | `binary` | 必填 | 電話加密值 |
+| `email_encrypted` | `binary` | 必填 | Email 加密值 |
+| `address_encrypted` | `binary` | 必填 | 地址加密值 |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 最後修改時間 |
+| `deleted_at` | `datetime` | 選填 | Soft Delete 時間 |
 
-約束：`UNIQUE(company_id, employee_code)`；明確不含 `status`、`hire_date`、`leave_date`。
+**明確不含：** `status`、`hire_date`、`leave_date`。
 
 ## `employee_employments`
 
 **註釋：** 員工每次任職關係；回任新增一筆。
 
-`id uuid PK`、`employee_id uuid FK`、`employment_type_code integer`（1正職、2兼職、3約聘、4派遣、5工讀、6臨時、7顧問、8實習）、`employment_nature_code integer`（例如 1不定期契約、2定期契約）、`hire_date date`、`leave_date date nullable`、`leave_reason_code integer nullable`、`status string/integer code`、`created_at datetime`、`updated_at datetime`、`deleted_at datetime nullable`。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `uuid` | 必填 | 主鍵，資料唯一識別碼 |
+| `employee_id` | `uuid` | 必填 | 員工外鍵 |
+| `employment_type_code` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
 
 ## 人事歷史表
 
@@ -27,7 +46,15 @@
 
 **註釋：** 任職期間的部門歸屬歷史。
 
-`id uuid PK`、`employment_id uuid FK`、`department_id uuid FK`、`effective_from date`、`effective_to date nullable`、`created_at datetime`、`updated_at datetime`。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `uuid` | 必填 | 主鍵，資料唯一識別碼 |
+| `employment_id` | `uuid` | 必填 | 任職紀錄外鍵 |
+| `department_id` | `uuid` | 必填 | 部門外鍵 |
+| `effective_from` | `date` | 必填 | 生效開始日 |
+| `effective_to` | `date` | 選填 | 生效結束日 |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 最後修改時間 |
 
 約束：同一任職在同一時間只能有一筆有效部門，期間不可重疊。
 
@@ -35,27 +62,75 @@
 
 **註釋：** 系統預設及公司自訂職稱。
 
-`id uuid PK`、`company_id uuid nullable`（NULL 為系統預設）、`code string`、`name string`、`description string`、`is_system boolean`、`status string`、`created_at datetime`、`updated_at datetime`、`deleted_at datetime nullable`。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `uuid` | 必填 | 主鍵，資料唯一識別碼 |
+| `company_id` | `uuid` | 選填 | 所屬公司外鍵 |
 
 ### `employee_job_title_histories`
 
-`id uuid PK`、`employment_id uuid FK`、`job_title_id uuid FK`、`effective_from date`、`effective_to date nullable`、`created_at datetime`、`updated_at datetime`。同時間一個有效職稱。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `uuid` | 必填 | 主鍵，資料唯一識別碼 |
+| `employment_id` | `uuid` | 必填 | 任職紀錄外鍵 |
+| `job_title_id` | `uuid` | 必填 | 職稱外鍵 |
+| `effective_from` | `date` | 必填 | 生效開始日 |
+| `effective_to` | `date` | 選填 | 生效結束日 |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 最後修改時間 |
 
 ### `job_positions`
 
 **註釋：** 職務主檔；職務與職稱分離。
 
-`id uuid PK`、`company_id uuid nullable`、`code string`、`name string`、`description string`、`is_system boolean`、`status string`、`created_at datetime`、`updated_at datetime`、`deleted_at datetime nullable`。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `uuid` | 必填 | 主鍵，資料唯一識別碼 |
+| `company_id` | `uuid` | 選填 | 所屬公司外鍵 |
+| `code` | `string` | 必填 | 業務代碼 |
+| `name` | `string` | 必填 | 顯示名稱 |
+| `description` | `string` | 必填 | 用途或異動說明 |
+| `is_system` | `boolean` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `status` | `string` | 必填 | 狀態代碼，不使用 DB ENUM |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 最後修改時間 |
+| `deleted_at` | `datetime` | 選填 | Soft Delete 時間 |
 
 ### `employee_job_position_histories`
 
-`id uuid PK`、`employment_id uuid FK`、`job_position_id uuid FK`、`effective_from date`、`effective_to date nullable`、`created_at datetime`、`updated_at datetime`。允許同時間多筆有效職務。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `uuid` | 必填 | 主鍵，資料唯一識別碼 |
+| `employment_id` | `uuid` | 必填 | 任職紀錄外鍵 |
+| `job_position_id` | `uuid` | 必填 | 職務外鍵 |
+| `effective_from` | `date` | 必填 | 生效開始日 |
+| `effective_to` | `date` | 選填 | 生效結束日 |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 最後修改時間 |
 
 ## `employee_dependents`
 
 **註釋：** 薪資扣繳／報稅所需扶養親屬及資格條件。
 
-`id uuid PK`、`employee_id uuid FK`、`name string`、`identity_number_encrypted binary`、`identity_number_hash binary`、`birthday_encrypted binary`、`relationship_code integer`、`is_student boolean`、`is_disabled boolean`、`is_unable_to_work boolean`、`is_cohabiting boolean`、`effective_date date`、`end_date date nullable`、`status string`、`created_at datetime`、`updated_at datetime`、`deleted_at datetime nullable`。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `uuid` | 必填 | 主鍵，資料唯一識別碼 |
+| `employee_id` | `uuid` | 必填 | 員工外鍵 |
+| `name` | `string` | 必填 | 顯示名稱 |
+| `identity_number_encrypted` | `binary` | 必填 | 身分證加密值 |
+| `identity_number_hash` | `binary` | 必填 | 身分證查詢 Hash |
+| `birthday_encrypted` | `binary` | 必填 | 出生年月日加密值 |
+| `relationship_code` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `is_student` | `boolean` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `is_disabled` | `boolean` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `is_unable_to_work` | `boolean` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `is_cohabiting` | `boolean` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `effective_date` | `date` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `end_date` | `date` | 選填 | 結束日期 |
+| `status` | `string` | 必填 | 狀態代碼，不使用 DB ENUM |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 最後修改時間 |
+| `deleted_at` | `datetime` | 選填 | Soft Delete 時間 |
 
 親屬代碼直接寫欄位註釋，不另開表：1配偶、2父親、3母親、4子女、5兄弟姊妹、6祖父母、7孫子女、8其他。
 
@@ -63,7 +138,11 @@
 
 **註釋：** 每月薪資扣繳方式及有效期間。
 
-`id bigint/uuid PK`、`employee_id FK`、`withholding_method_code integer`（1依薪資所得扣繳稅額表、2按全月給付總額5%）、`effective_from date`、`effective_to date nullable`、`created_by FK`、`created_at datetime`。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `bigint/uuid` | 必填 | 主鍵，資料唯一識別碼 |
+| `employee_id` | `FK` | 必填 | 員工外鍵 |
+| `withholding_method_code` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
 
 ## 薪資核心
 
@@ -71,13 +150,31 @@
 
 **註釋：** 系統預設或公司自訂薪資項目。
 
-`id uuid PK`、`company_id uuid nullable`、`code string`、`name string`、`type_code integer`（1應發、2扣款）、`calculation_type_code integer`、`is_taxable boolean`、`is_insurable boolean`、`is_active boolean`、`description string`、`created_at datetime`、`updated_at datetime`、`deleted_at datetime nullable`。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `uuid` | 必填 | 主鍵，資料唯一識別碼 |
+| `company_id` | `uuid` | 選填 | 所屬公司外鍵 |
+| `code` | `string` | 必填 | 業務代碼 |
+| `name` | `string` | 必填 | 顯示名稱 |
+| `type_code` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
 
 ### `employee_salary_settings`
 
 **註釋：** 任職的長期薪資項目設定與調薪歷史。
 
-`id uuid PK`、`employment_id uuid FK`、`salary_item_id uuid FK`、`calculation_type_code integer`、`amount decimal`、`start_date date`、`end_date date nullable`、`description string`、`created_at datetime`、`updated_at datetime`、`deleted_at datetime nullable`。新設定不得覆蓋舊有效期間。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `uuid` | 必填 | 主鍵，資料唯一識別碼 |
+| `employment_id` | `uuid` | 必填 | 任職紀錄外鍵 |
+| `salary_item_id` | `uuid` | 必填 | 薪資項目外鍵 |
+| `calculation_type_code` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `amount` | `decimal` | 必填 | 金額或計算基礎值 |
+| `start_date` | `date` | 必填 | 開始日期 |
+| `end_date` | `date` | 選填 | 結束日期 |
+| `description` | `string` | 必填 | 用途或異動說明 |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 最後修改時間 |
+| `deleted_at` | `datetime` | 選填 | Soft Delete 時間 |
 
 ### `payroll_settings`
 
@@ -95,7 +192,14 @@
 
 **註釋：** 當期實際薪資明細，可來自長期設定、系統計算、臨時新增或人工調整。
 
-核心欄位：`id`、`payroll_id`、`salary_item_id nullable`、`item_name`、`type_code`、`source_type_code`（1薪資設定、2系統計算、3臨時新增、4人工調整）、`amount decimal`、`reason`、`created_by`、`created_at`。結算後成為不可變歷史。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `原對話此處未重列` | 待核對 | 主鍵，資料唯一識別碼 |
+| `payroll_id` | `原對話此處未重列` | 待核對 | 薪資結算外鍵 |
+| `salary_item_id` | `nullable` | 選填 | 薪資項目外鍵 |
+| `item_name` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
+| `type_code` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
+| `source_type_code` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
 
 ### `employee_salary_bank_accounts`
 
@@ -109,12 +213,37 @@
 
 ### `personnel_cost_items`
 
-`id uuid PK`、`company_id uuid nullable`、`code string`、`name string`、`type_code integer`、`is_active boolean`、`description string`、`created_at datetime`、`updated_at datetime`、`deleted_at datetime nullable`。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `uuid` | 必填 | 主鍵，資料唯一識別碼 |
+| `company_id` | `uuid` | 選填 | 所屬公司外鍵 |
+| `code` | `string` | 必填 | 業務代碼 |
+| `name` | `string` | 必填 | 顯示名稱 |
+| `type_code` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `is_active` | `boolean` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `description` | `string` | 必填 | 用途或異動說明 |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 最後修改時間 |
+| `deleted_at` | `datetime` | 選填 | Soft Delete 時間 |
 
 ### `personnel_costs`
 
 **註釋：** 某員工在某成本期間的實際公司負擔。
 
-`id uuid PK`、`company_id uuid FK`、`employee_id uuid FK`、`employment_id uuid FK`、`personnel_cost_item_id uuid FK`、`payroll_id uuid nullable FK`、`cost_date date`、`cost_period string`、`amount decimal`、`source_type_code integer`、`description string`、`created_at datetime`、`updated_at datetime`。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `uuid` | 必填 | 主鍵，資料唯一識別碼 |
+| `company_id` | `uuid` | 必填 | 所屬公司外鍵 |
+| `employee_id` | `uuid` | 必填 | 員工外鍵 |
+| `employment_id` | `uuid` | 必填 | 任職紀錄外鍵 |
+| `personnel_cost_item_id` | `uuid` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `payroll_id` | `uuid` | 選填 | 薪資結算外鍵 |
+| `cost_date` | `date` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `cost_period` | `string` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `amount` | `decimal` | 必填 | 金額或計算基礎值 |
+| `source_type_code` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `description` | `string` | 必填 | 用途或異動說明 |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 最後修改時間 |
 
 
