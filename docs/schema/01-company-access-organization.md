@@ -1,0 +1,82 @@
+# 公司、角色權限與組織
+
+## 公司功能重點
+
+- SaaS 多公司；`id` 與業務用 `company_code` 分離。
+- 公司 Code：統編＋3 碼流水號；個人 Code：建立日 `YYYYMMDD`＋3 碼流水號；無分隔符。
+- 流水號只增不減、不重用；`company_code` 全域唯一。
+- 同一負責人可以對應多家公司，身分證 Hash 不作為拒絕建立公司的唯一條件。
+- 地址直接放公司主檔，只有登記、實際、發票三組。
+- 負責人、業務、會計統一放聯絡人表。
+
+## `companies`
+
+**資料表註釋：** SaaS Tenant／公司或個人雇主主檔，保存法定識別、三組地址及系統狀態。
+
+| 欄位 | 型態 | 必填 | 註釋 |
+|---|---|---:|---|
+| `id` | `uuid` | 是 | PK，系統內部 Tenant ID |
+| `company_code` | `string` | 是 | 全域唯一業務編號 |
+| `company_type` | `string` | 是 | 公司／個人；不用 ENUM |
+| `legal_type` | `string` | 是 | 法律型態 |
+| `tax_id` | `string` | 條件 | 統編；公司型主體使用 |
+| `name` | `string` | 是 | 正式名稱／個人姓名 |
+| `short_name` | `string` | 否 | 簡稱 |
+| `registered_postal_code/city/district/address` | `string` | 否 | 登記地址四欄 |
+| `actual_postal_code/city/district/address` | `string` | 否 | 實際地址四欄 |
+| `invoice_postal_code/city/district/address` | `string` | 否 | 發票地址四欄 |
+| `status` | `string` | 是 | 公司資料狀態 |
+| `created_at` | `datetime` | 是 | 建立時間 |
+| `updated_at` | `datetime` | 是 | 修改時間 |
+| `deleted_at` | `datetime` | 否 | Soft delete |
+
+約束：`UNIQUE(company_code)`。識別碼、統編、郵遞區號均用字串，不用整數。
+
+## `company_contacts`
+
+**資料表註釋：** 公司負責人、業務與會計聯絡窗口；Company 1:N Contacts。
+
+| 欄位 | 型態 | 必填 | 註釋 |
+|---|---|---:|---|
+| `id` | `uuid` | 是 | PK |
+| `company_id` | `uuid` | 是 | FK → `companies.id` |
+| `contact_type` | `string` | 是 | `OWNER`／`SALES`／`ACCOUNTING` |
+| `name` | `string` | 是 | 姓名，明文 |
+| `identity_number_encrypted` | `binary` | 條件 | 身分證加密值 |
+| `identity_number_hash` | `binary` | 條件 | 查詢 Hash；不是公司唯一限制 |
+| `birthday_encrypted` | `binary` | 否 | 生日加密值 |
+| `phone_encrypted` | `binary` | 否 | 電話加密值 |
+| `email_encrypted` | `binary` | 否 | Email 加密值 |
+| `created_at/updated_at` | `datetime` | 是 | 建立／修改時間 |
+
+## 角色／權限
+
+### `roles`
+
+**註釋：** 公司角色主檔；不預先寫死 HR、主管等角色。
+
+`id uuid PK`、`company_id uuid FK`、`code string`、`name string`、`description string`、`is_system boolean`、`status string`、`created_at datetime`、`updated_at datetime`、`deleted_at datetime nullable`。
+
+### `permissions`
+
+**註釋：** 系統權限主檔，以自關聯建立任意層級的大權限／次權限。
+
+`id uuid PK`、`parent_id uuid nullable FK→permissions.id`、`code string`、`name string`、`description string`、`status string`、`created_at datetime`、`updated_at datetime`、`deleted_at datetime nullable`。
+
+`permission_type` 最終不採用；層級只由 `parent_id` 表示。
+
+### `role_permissions`
+
+**註釋：** 角色與權限多對多關聯。
+
+`role_id uuid FK`、`permission_id uuid FK`、`created_at datetime`；複合唯一 `UNIQUE(role_id, permission_id)`，不需要獨立 `id`。
+
+## `departments`
+
+**資料表註釋：** 公司部門樹；以 `parent_id` 支援無限層級。
+
+`id uuid PK`、`company_id uuid FK`、`parent_id uuid nullable FK→departments.id`、`code string`、`name string`、`description string`、`status string`、`created_at datetime`、`updated_at datetime`、`deleted_at datetime nullable`。
+
+約束：父子部門必須屬於同一 `company_id`；不得跨 Tenant 建樹。
+
+
