@@ -12,7 +12,10 @@
 
 ### `overtime_compensations`
 
-**註釋：** 已核准加班最終補償方式。正式規則：一筆加班不可拆為部分加班費＋部分補休；`1=加班費`、`2=補休`。實際打卡超過申請時段不自動擴增認列。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `1=加班費` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
+| `2=補休` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
 
 ## 補休
 
@@ -20,7 +23,13 @@
 
 **註釋：** 每筆來源產生的補休額度批次。
 
-核心欄位：`id`、`company_id`、`employee_id`、`employment_id`、`source_type_code`（1加班、2公司贈與、3人工調整）、`source_id/source_overtime_id`、`pay_type_code`、`credited/earned_minutes`、`effective_from/earned_at`、`effective_to/expire_at`、`status_code`、時間欄位。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `原對話此處未重列` | 待核對 | 主鍵，資料唯一識別碼 |
+| `company_id` | `原對話此處未重列` | 待核對 | 所屬公司外鍵 |
+| `employee_id` | `原對話此處未重列` | 待核對 | 員工外鍵 |
+| `employment_id` | `原對話此處未重列` | 待核對 | 任職紀錄外鍵 |
+| `source_type_code` | `原對話此處未重列` | 待核對 | 依原對話之欄位用途；未新增額外規則 |
 
 ### `compensatory_leave_rate_snapshots`
 
@@ -48,7 +57,12 @@
 
 ### `leave_entitlements`
 
-`id bigint/uuid PK`、`employee_id FK`、`leave_type_id FK`、`source_type_code integer`（1法定取得、2公司贈與、3遞延、4人工調整）、`source_id nullable`、`pay_type_code integer`（1有薪、2無薪）、`entitled_minutes integer`、`effective_from date`、`effective_to date`、`status_code integer`、`created_at datetime`、`updated_at datetime`。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `bigint/uuid` | 必填 | 主鍵，資料唯一識別碼 |
+| `employee_id` | `FK` | 必填 | 員工外鍵 |
+| `leave_type_id` | `FK` | 必填 | 假別外鍵 |
+| `source_type_code` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
 
 ### `leave_balances` / `leave_balance_transactions`
 
@@ -56,15 +70,37 @@
 
 ### `leave_requests`
 
-`id bigint/uuid PK`、`employee_id FK`、`request_no varchar(30)`、`status_code integer`、`reason text nullable`、送出／核准／拒絕／撤銷人員與時間、拒絕／撤銷原因、`created_at datetime`、`updated_at datetime`。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `bigint/uuid` | 必填 | 主鍵，資料唯一識別碼 |
+| `employee_id` | `FK` | 必填 | 員工外鍵 |
+| `request_no` | `varchar(30)` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `status_code` | `integer` | 必填 | 流程或資料狀態代碼 |
+| `reason` | `text` | 選填 | 原因 |
 
 ### `leave_request_details`
 
-`id PK`、`leave_request_id FK`、`leave_type_id FK`、`leave_date date`、`start_time time nullable`、`end_time time nullable`、`requested_minutes integer`、`reason text nullable`、時間欄位。一張申請可跨日期，亦可用多明細表達不同假別。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `PK` | 必填 | 主鍵，資料唯一識別碼 |
+| `leave_request_id` | `FK` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `leave_type_id` | `FK` | 必填 | 假別外鍵 |
+| `leave_date` | `date` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `start_time` | `time` | 選填 | 依原對話之欄位用途；未新增額外規則 |
+| `end_time` | `time` | 選填 | 依原對話之欄位用途；未新增額外規則 |
+| `requested_minutes` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `reason` | `text` | 選填 | 原因 |
 
 ### `leave_request_allocations`
 
-`id PK`、`leave_request_detail_id FK`、`entitlement_type_code integer`、`entitlement_id FK`、`allocated_minutes integer`、`created_at datetime`。記錄每次實際扣用哪一批一般假額度或補休額度。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `PK` | 必填 | 主鍵，資料唯一識別碼 |
+| `leave_request_detail_id` | `FK` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `entitlement_type_code` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `entitlement_id` | `FK` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `allocated_minutes` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `created_at` | `datetime` | 必填 | 建立時間 |
 
 ### `leave_request_approvals` / `leave_request_documents` / `leave_events`
 
@@ -74,13 +110,38 @@
 
 ### `company_leave_grant_batches`
 
-`id bigint PK`、`batch_no varchar(30)`、`name varchar(100)`、`leave_type_id FK`、`pay_type_code integer`、`granted_minutes integer`、`effective_from date`、`effective_to date`、`reason text`、`created_by FK`、`created_at datetime`、`updated_at datetime`。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `bigint` | 必填 | 主鍵，資料唯一識別碼 |
+| `batch_no` | `varchar(30)` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `name` | `varchar(100)` | 必填 | 顯示名稱 |
+| `leave_type_id` | `FK` | 必填 | 假別外鍵 |
+| `pay_type_code` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `granted_minutes` | `integer` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `effective_from` | `date` | 必填 | 生效開始日 |
+| `effective_to` | `date` | 必填 | 生效結束日 |
+| `reason` | `text` | 必填 | 原因 |
+| `created_by` | `FK` | 必填 | 建立者外鍵 |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 最後修改時間 |
 
 同批不得混用假別、薪資類型、額度或有效期；`granted_minutes > 0`；起訖日必填。
 
 ### `company_leave_grants`
 
-`id bigint PK`、`batch_id FK`、`employee_id FK`、`status_code integer`、`granted_by FK`、`granted_at datetime nullable`、`cancelled_by FK nullable`、`cancelled_at datetime nullable`、`cancel_reason text nullable`、`created_at datetime`、`updated_at datetime`。
+| 欄位名稱 | 資料型態 | 必填性 | 欄位註釋 |
+|---|---|---|---|
+| `id` | `bigint` | 必填 | 主鍵，資料唯一識別碼 |
+| `batch_id` | `FK` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `employee_id` | `FK` | 必填 | 員工外鍵 |
+| `status_code` | `integer` | 必填 | 流程或資料狀態代碼 |
+| `granted_by` | `FK` | 必填 | 依原對話之欄位用途；未新增額外規則 |
+| `granted_at` | `datetime` | 選填 | 依原對話之欄位用途；未新增額外規則 |
+| `cancelled_by` | `FK` | 選填 | 依原對話之欄位用途；未新增額外規則 |
+| `cancelled_at` | `datetime` | 選填 | 依原對話之欄位用途；未新增額外規則 |
+| `cancel_reason` | `text` | 選填 | 依原對話之欄位用途；未新增額外規則 |
+| `created_at` | `datetime` | 必填 | 建立時間 |
+| `updated_at` | `datetime` | 必填 | 最後修改時間 |
 
 逐員工處理，個別失敗可單獨重試；公司直接核發，員工不可互贈；生效前可撤銷，已使用歷史不可抹除；到期或離職後不可使用但資料保留。
 
