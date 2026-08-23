@@ -52,13 +52,24 @@
 |---|---|---|---|
 | `id` | `bigint` | 必填 | PK，審核紀錄 ID |
 | `overtime_request_id` | `bigint` | 必填 | FK → `overtime_requests.id` |
-| `action_code` | `integer` | 必填 | 1 核准、2 拒絕、3 撤回核准、4 取消 |
+| `action_code` | `integer` | 必填 | 1 核准、2 退回、3 撤銷核准、4 撤銷退回、5 取消 |
 | `action_by` | `bigint` | 必填 | 執行者 |
 | `action_at` | `datetime` | 必填 | 執行時間 |
-| `reason` | `text` | 選填 | 審核／撤回／取消原因 |
+| `reason` | `text` | 條件必填 | 退回、撤銷核准及撤銷退回時必填 |
 | `created_at` | `datetime` | 必填 | 建立時間 |
 
 **約束：** 審核歷史只新增、不覆寫；申請主檔狀態是目前狀態，本表才是完整流程軌跡。
+### 已確認的加班簽核 UI 與撤銷規則
+
+- 進入預設顯示待審核，第 1 頁，每頁 20 筆，等待最久優先。
+- 列表顯示員工、部門、日期、日別、申請時段、有效出勤、時數、計酬、事由及狀態。
+- 審核者不得修改申請時間，也不得部分核准；只能整筆核准或退回。
+- 核准時認列分鐘必須等於申請分鐘；部分不符即整筆退回。
+- 薪資尚未核算時，可撤銷核准或撤銷退回並回到待審核。
+- 補休尚未使用時，可先撤銷補休額度再撤銷加班核准；已使用則不可直接撤銷。
+- 薪資開始核算或加班費已進入薪資後不可撤銷。
+- 詳細規劃見 [18-ui-overtime-approval.md](18-ui-overtime-approval.md)。
+
 ### `overtime_compensations`
 
 **資料表註釋：** `overtime_compensations` 的已確認資料責任；詳細規則依本節說明。
@@ -79,7 +90,7 @@
 | `cancel_reason` | `text` | 選填 | 撤銷原因 |
 | `created_at` | `datetime` | 必填 | 建立時間 |
 
-**約束：** 同一加班申請同時間只能有一筆有效補償；不得同時拆成加班費與補休。撤銷後重新核發必須新增處理與 Snapshot，不得 UPDATE 舊資料。
+**約束：** 同一加班申請同時間只能有一筆有效補償；不得同時拆成加班費與補休。撤銷後重新核發必須新增處理與 Snapshot，不得 UPDATE 舊資料。 核准時 `recognized_minutes` 必須等於 `overtime_requests.requested_minutes`，不允許部分核准。撤銷核准時本表標記撤銷而不刪除；補休已被使用或薪資已開始核算時不得直接撤銷。
 
 ## 補休
 
