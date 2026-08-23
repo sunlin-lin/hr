@@ -38,6 +38,7 @@
 - [03-scheduling-attendance.md](03-scheduling-attendance.md)
 - [04-overtime-leave.md](04-overtime-leave.md)
 - [05-regulatory-system.md](05-regulatory-system.md)
+- [06-schema-dictionary.md](06-schema-dictionary.md) — 統一表格化資料字典
 
 ## 全域規則
 
@@ -47,5 +48,4 @@
 - 原始事實、規則、額度交易、結算 Snapshot 分離。
 - 歷史不可用 UPDATE 或 DELETE 抹除；撤銷、更正、返還均留紀錄。
 - 所有 Tenant 資料必須可追溯至 Company。
-
 
